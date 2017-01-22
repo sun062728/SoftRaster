@@ -160,7 +160,8 @@ private:
 	void VertexShader(IA2VS ia2vs);
 	void TriangleSetup_Clip(VS2TAS vs2tas);
 	void TriangleSetup_PostClip(TASInternal tasInternal);
-	void Rasterization(TAS2RAS tas2ras);
+	void Rasterization_float(TAS2RAS tas2ras);
+	void Rasterization_integer(TAS2RAS tas2ras);
 	void PixelShader(RAS2PS ras2ps);
 	void PixelShader_fresnel(RAS2PS ras2ps);
 	void PixelShader_cook_torrance(RAS2PS ras2ps);
