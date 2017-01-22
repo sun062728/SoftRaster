@@ -6,17 +6,23 @@
 #include "Utils\Vector.hpp"
 #include "Utils\Utils.hpp"
 
+void test() {
+	Vector2f texcoord(0.4f, 0.5f);
+}
+
 int main()
 {
+	test();
+
 	//ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\cube.obj");
 	ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\bunny.obj");
 	//ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\mesh\\Aventador\\Avent_tri.mtl.obj");
 	std::vector<float> vPos, vNorm, vTC;
 	int iPosChn, iNormChn, iTCChn;
 	std::vector<int> vIdx;
-	const int WIDTH = 1024;
-	const int HEIGHT = 1024;
-	const float THETA = 60.0f;
+	constexpr int WIDTH = 1024;
+	constexpr int HEIGHT = 1024;
+	constexpr float THETA = 60.0f;
 
 	// raster init
 	Raster raster;
@@ -65,13 +71,13 @@ int main()
 		{
 			char szMeshName[1024];
 			if (false == objLoader.getMeshName(iObj, iGrp, szMeshName, 1024))
-				DebugBreak();
+				assert(0);
 			if (false == objLoader.getMesh(0, 0, vPos, iPosChn, vNorm, iNormChn, vTC, iTCChn, vIdx))
-				DebugBreak();
+				assert(0);
 
-			if (iPosChn != 3) DebugBreak();
-			if (!(iNormChn != 3 || iNormChn != 0)) DebugBreak();
-			if (!(iTCChn != 2 || iTCChn != 0)) DebugBreak();
+			if (iPosChn != 3) assert(0);
+			if (!(iNormChn != 3 || iNormChn != 0)) assert(0);
+			if (!(iTCChn != 2 || iTCChn != 0)) assert(0);
 
 			raster.setVertexAttribs(vPos, 3, vNorm, 0, vTC, 0, vIdx);
 

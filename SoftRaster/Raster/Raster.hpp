@@ -2,7 +2,7 @@
 
 #include <windows.h>
 #include <vector>
-#include <assert.h>
+#include <cassert>
 
 #include "../Utils/Matrix.hpp"
 #include "../Utils/Vector.hpp"
@@ -10,7 +10,6 @@
 class Raster
 {
 public:
-	/* Interfaces */
 	Raster();
 	~Raster()
 	{
@@ -47,58 +46,58 @@ public:
 private:
 
 	/* module interface */
-	typedef struct _VtxProps
+	struct VtxProps
 	{
 		Vector4f	position;
 		Vector3f	normal;
 		Vector2f	texcoord;
 		Vector4f	posWorld;
-	}VtxProps;
+	};
 
-	typedef struct _PixelProps
+	struct PixelProps
 	{
 		Vector2i	coord;
-		Vector4f	posWorld; // world transformed
+		Vector4f	posWorld;
 		Vector3f	normal;
 		Vector2f	texcoord;
-	}PixelProps;
+	};
 
-	typedef struct _IA2VS
+	struct IA2VS
 	{
 		VtxProps v1, v2, v3;
-	}IA2VS;
+	};
 
-	typedef struct _VS2TAS
+	struct VS2TAS
 	{
 		VtxProps v1, v2, v3;
-	}VS2TAS;
+	};
 
-	typedef struct _TASInternal
+	struct TASInternal
 	{
 		VtxProps v1, v2, v3;
-	}TASInternal;
+	};
 
-	typedef struct _TAS2RAS
+	struct TAS2RAS
 	{
 		VtxProps v1, v2, v3;
-	}TAS2RAS;
+	};
 
-	typedef struct _RAS2PS
+	struct RAS2PS
 	{
 		PixelProps p;
-	}RAS2PS;
+	};
 
-	typedef struct _PS2OM
+	struct PS2OM
 	{
 
-	}PS2OM;
+	};
 
 	/*  */
-	typedef struct _Viewport
+	struct Viewport
 	{
 		int x, y, w, h;
 		float zn, zf;
-	}Viewport;
+	};
 
 	class Framebuffer
 	{
@@ -200,7 +199,7 @@ private:
 	}
 
 	// nearest sampler
-	inline Color4f tex2D(const Vector2f &v, int i)
+	inline Color4f tex2D(const Vector2f &v, int i/* Tex idx*/)
 	{
 		Texture2D &tex = m_tex[i];
 		if (tex.texData.size() == 0)

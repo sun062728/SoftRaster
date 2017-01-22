@@ -1,56 +1,50 @@
 #include "ObjLoader.hpp"
 
-ObjLoader::ObjLoader(std::string filePath)
-{
-	// save file text into buf
+ObjLoader::ObjLoader(std::string filePath) {
 	std::fstream obj(filePath, std::ios::in);
-	if (!obj)
-	{
-		DebugBreak();
+	if (!obj) {
+		assert(0);
 		return;
 	}
-
 	parse(obj);
 }
 
-void ObjLoader::parse(std::fstream &obj)
-{
+void ObjLoader::parse(std::fstream &obj) {
 	const int MAX_LINE_SIZE = 256;
 	char line[MAX_LINE_SIZE];
-	Object &o = m_obj;
-	Group  &g = m_grp;
+	Object &o = obj_;
+	Group  &g = grp_;
 
 	obj.getline(line, MAX_LINE_SIZE);
 
 	while (!obj.eof())
 	{
 		char *cur = line;
-		switch (*cur++)
-		{
+		switch (*cur++)	{
 		case 'v':
 			switch (*cur++)
 			{
 			case ' ':
 			{
-				int i = readFloats(cur, m_vPosition);
-				m_iPosChn == 0 ? m_iPosChn = i : assert(m_iPosChn == i);
+				int i = readFloats(cur, vPosition_);
+				iPosChn_ == 0 ? iPosChn_ = i : assert(iPosChn_ == i);
 				break;
 			}
 			case 'n':
 			{
-				int i = readFloats(++cur, m_vNormal);
-				m_iNormChn == 0 ? m_iNormChn = i : assert(m_iNormChn == i);
+				int i = readFloats(++cur, vNormal_);
+				iNormChn_ == 0 ? iNormChn_ = i : assert(iNormChn_ == i);
 				break;
 			}
 			case 't':
 			{
-				int i = readFloats(++cur, m_vTexcoord);
-				m_iTCChn == 0 ? m_iTCChn = i : assert(m_iTCChn == i);
+				int i = readFloats(++cur, vTexcoord_);
+				iTCChn_ == 0 ? iTCChn_ = i : assert(iTCChn_ == i);
 				break;
 			}
 			case 'p': break;
 			default:
-				DebugBreak();
+				assert(0);
 				break;
 			}
 			break;
@@ -61,8 +55,7 @@ void ObjLoader::parse(std::fstream &obj)
 			int i = 0, length = 0;
 			errno_t err = 0;
 			cur++;
-			for (; NULL != (p = strchr(cur, ' ')); i++)
-			{
+			for (; NULL != (p = strchr(cur, ' ')); i++) {
 				length = p - cur;
 				err = strcpy_s(buf, MAX_LINE_SIZE, cur);
 				buf[length] = '\0';
@@ -82,8 +75,7 @@ void ObjLoader::parse(std::fstream &obj)
 		case 'u': break; // material instance
 		case 'o': // object name
 		{
-			if (!o.empty())
-			{
+			if (!o.empty()) {
 				endGrp();
 				endObj();
 			}
@@ -92,8 +84,7 @@ void ObjLoader::parse(std::fstream &obj)
 		}
 		case 'g': // group name
 		{
-			if (!g.empty())
-			{
+			if (!g.empty()) {
 				endGrp();
 			}
 			g.sGroupName.assign(++cur);
@@ -105,7 +96,7 @@ void ObjLoader::parse(std::fstream &obj)
 		case '\0':
 			break;
 		default:
-			DebugBreak();
+			assert(0);
 			break;
 		}
 		obj.getline(line, MAX_LINE_SIZE);
@@ -114,23 +105,18 @@ void ObjLoader::parse(std::fstream &obj)
 	endObj();
 }
 
-void ObjLoader::readFaceElement(char *p, Group &g)
-{
+void ObjLoader::readFaceElement(char *p, Group &g) {
 	char *pSlash1, *pSlash2;
-	if (pSlash1 = strchr(p, '/'))
-	{
-		if (pSlash2 = strchr(pSlash1 + 1, '/'))
-		{
-			if (pSlash2 == pSlash1 + 1) // v//vn
-			{
+	if (pSlash1 = strchr(p, '/')) {
+		if (pSlash2 = strchr(pSlash1 + 1, '/'))	{
+			if (pSlash2 == pSlash1 + 1) { // v//vn
 				g.checkFaceType(Group::FaceType::FT_VN);
 				int idx = atoi(p);
 				pushPos(g, idx);
 				idx = atoi(pSlash2 + 1);
 				pushNorm(g, idx);
 			}
-			else // v/vt/vn
-			{
+			else { // v/vt/vn
 				g.checkFaceType(Group::FaceType::FT_VTN);
 				int idx = atoi(p);
 				pushPos(g, idx);
@@ -140,8 +126,7 @@ void ObjLoader::readFaceElement(char *p, Group &g)
 				pushNorm(g, idx);
 			}
 		}
-		else // v/vt
-		{
+		else { // v/vt
 			g.checkFaceType(Group::FaceType::FT_VT);
 			int idx = atoi(p);
 			pushPos(g, idx);
@@ -149,10 +134,9 @@ void ObjLoader::readFaceElement(char *p, Group &g)
 			pushTexcoord(g, idx);
 		}
 	}
-	else // v
-	{
+	else { // v
 		g.checkFaceType(Group::FaceType::FT_V);
 		int idx = atoi(p);
-		g.vPosition.push_back(m_vPosition[idx - 1]);
+		g.vPosition.push_back(vPosition_[idx - 1]);
 	}
 }

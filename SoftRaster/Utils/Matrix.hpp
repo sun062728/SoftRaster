@@ -1,4 +1,9 @@
 /*
+** Matrix3x3 float
+** Matrix4x4 float
+** 
+** Matrix2x2 float is redundent
+**
 ** Issue:
 ** 1. Row-major but left multiply!
 */
