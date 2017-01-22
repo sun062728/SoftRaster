@@ -9,113 +9,110 @@ Raster::Raster()
 
 void Raster::init()
 {
-	m_viewport.zn = 0.0f;
-	m_viewport.zf = 1.0f;
+	viewport_.zn = 0.0f;
+	viewport_.zf = 1.0f;
 
-	m_mWorld.identity();
-	m_mView.identity();
-	m_mProj.identity();
+	mWorld_.identity();
+	mView_.identity();
+	mProj_.identity();
 
-	memset(&m_drawBuffer, 0, sizeof(m_drawBuffer));
+	memset(&drawBuffer_, 0, sizeof(drawBuffer_));
 }
 
 void Raster::InputAssembler()
 {
 	IA2VS ia2vs;
 
-	if (m_vIndex.empty())
-	{
-		const unsigned int SIZE = m_vPosition.size();
-		for (unsigned int idx = 0; idx < SIZE / 3;)
-		{
+	if (vIndex_.empty()) {
+		const unsigned int SIZE = vPosition_.size();
+
+		for (unsigned int idx = 0; idx < SIZE / 3;) {
 			int offset = idx * 3, cur = offset;
-			ia2vs.v1.position.x = m_vPosition[cur++];
-			ia2vs.v1.position.y = m_vPosition[cur++];
-			ia2vs.v1.position.z = m_vPosition[cur];
+			ia2vs.v1.position.x = vPosition_[cur++];
+			ia2vs.v1.position.y = vPosition_[cur++];
+			ia2vs.v1.position.z = vPosition_[cur];
 			ia2vs.v1.position.w = 1.0f;
 			offset = idx * 3, cur = offset;
-			ia2vs.v1.normal.x = m_vNormal[cur++];
-			ia2vs.v1.normal.y = m_vNormal[cur++];
-			ia2vs.v1.normal.z = m_vNormal[cur];
+			ia2vs.v1.normal.x = vNormal_[cur++];
+			ia2vs.v1.normal.y = vNormal_[cur++];
+			ia2vs.v1.normal.z = vNormal_[cur];
 			offset = idx * 2, cur = offset;
-			ia2vs.v1.texcoord.x = m_vTexcoord[cur++];
-			ia2vs.v1.texcoord.y = m_vTexcoord[cur];
+			ia2vs.v1.texcoord.x = vTexcoord_[cur++];
+			ia2vs.v1.texcoord.y = vTexcoord_[cur];
 			idx++;
 
 			offset = idx * 3; cur = offset;
-			ia2vs.v2.position.x = m_vPosition[cur++];
-			ia2vs.v2.position.y = m_vPosition[cur++];
-			ia2vs.v2.position.z = m_vPosition[cur];
+			ia2vs.v2.position.x = vPosition_[cur++];
+			ia2vs.v2.position.y = vPosition_[cur++];
+			ia2vs.v2.position.z = vPosition_[cur];
 			ia2vs.v2.position.w = 1.0f;
 			offset = idx * 3; cur = offset;
-			ia2vs.v2.normal.x = m_vNormal[cur++];
-			ia2vs.v2.normal.y = m_vNormal[cur++];
-			ia2vs.v2.normal.z = m_vNormal[cur];
+			ia2vs.v2.normal.x = vNormal_[cur++];
+			ia2vs.v2.normal.y = vNormal_[cur++];
+			ia2vs.v2.normal.z = vNormal_[cur];
 			offset = idx * 2; cur = offset;
-			ia2vs.v2.texcoord.x = m_vTexcoord[cur++];
-			ia2vs.v2.texcoord.y = m_vTexcoord[cur];
+			ia2vs.v2.texcoord.x = vTexcoord_[cur++];
+			ia2vs.v2.texcoord.y = vTexcoord_[cur];
 			idx++;
 
 			offset = idx * 3; cur = offset;
-			ia2vs.v3.position.x = m_vPosition[cur++];
-			ia2vs.v3.position.y = m_vPosition[cur++];
-			ia2vs.v3.position.z = m_vPosition[cur];
+			ia2vs.v3.position.x = vPosition_[cur++];
+			ia2vs.v3.position.y = vPosition_[cur++];
+			ia2vs.v3.position.z = vPosition_[cur];
 			ia2vs.v3.position.w = 1.0f;
 			offset = idx * 3; cur = offset;
-			ia2vs.v3.normal.x = m_vNormal[cur++];
-			ia2vs.v3.normal.y = m_vNormal[cur++];
-			ia2vs.v3.normal.z = m_vNormal[cur];
+			ia2vs.v3.normal.x = vNormal_[cur++];
+			ia2vs.v3.normal.y = vNormal_[cur++];
+			ia2vs.v3.normal.z = vNormal_[cur];
 			offset = idx * 2; cur = offset;
-			ia2vs.v3.texcoord.x = m_vTexcoord[cur++];
-			ia2vs.v3.texcoord.y = m_vTexcoord[cur];
+			ia2vs.v3.texcoord.x = vTexcoord_[cur++];
+			ia2vs.v3.texcoord.y = vTexcoord_[cur];
 			idx++;
 
 			VertexShader(ia2vs);
 		}
 	}
-	else
-	{
-		int size = m_vIndex.capacity(); assert(size % 3 == 0);
-		for (int i = 0; i < size; )
-		{
-			int idx = m_vIndex[i++], offset = idx * 3, cur = offset;
-			ia2vs.v1.position.x = m_vPosition[cur++];
-			ia2vs.v1.position.y = m_vPosition[cur++];
-			ia2vs.v1.position.z = m_vPosition[cur];
+	else {
+		int size = vIndex_.capacity(); assert(size % 3 == 0);
+		for (int i = 0; i < size; ) {
+			int idx = vIndex_[i++], offset = idx * 3, cur = offset;
+			ia2vs.v1.position.x = vPosition_[cur++];
+			ia2vs.v1.position.y = vPosition_[cur++];
+			ia2vs.v1.position.z = vPosition_[cur];
 			ia2vs.v1.position.w = 1.0f;
 			offset = idx * 3; cur = offset;
-			ia2vs.v1.normal.x = m_vNormal[cur++];
-			ia2vs.v1.normal.y = m_vNormal[cur++];
-			ia2vs.v1.normal.z = m_vNormal[cur];
+			ia2vs.v1.normal.x = vNormal_[cur++];
+			ia2vs.v1.normal.y = vNormal_[cur++];
+			ia2vs.v1.normal.z = vNormal_[cur];
 			offset = idx * 2; cur = offset;
-			ia2vs.v1.texcoord.x = m_vTexcoord[cur++];
-			ia2vs.v1.texcoord.y = m_vTexcoord[cur];
+			ia2vs.v1.texcoord.x = vTexcoord_[cur++];
+			ia2vs.v1.texcoord.y = vTexcoord_[cur];
 
-			idx = m_vIndex[i++]; offset = idx * 3; cur = offset;
-			ia2vs.v2.position.x = m_vPosition[cur++];
-			ia2vs.v2.position.y = m_vPosition[cur++];
-			ia2vs.v2.position.z = m_vPosition[cur];
+			idx = vIndex_[i++]; offset = idx * 3; cur = offset;
+			ia2vs.v2.position.x = vPosition_[cur++];
+			ia2vs.v2.position.y = vPosition_[cur++];
+			ia2vs.v2.position.z = vPosition_[cur];
 			ia2vs.v2.position.w = 1.0f;
 			offset = idx * 3; cur = offset;
-			ia2vs.v2.normal.x = m_vNormal[cur++];
-			ia2vs.v2.normal.y = m_vNormal[cur++];
-			ia2vs.v2.normal.z = m_vNormal[cur];
+			ia2vs.v2.normal.x = vNormal_[cur++];
+			ia2vs.v2.normal.y = vNormal_[cur++];
+			ia2vs.v2.normal.z = vNormal_[cur];
 			offset = idx * 2; cur = offset;
-			ia2vs.v2.texcoord.x = m_vTexcoord[cur++];
-			ia2vs.v2.texcoord.y = m_vTexcoord[cur];
+			ia2vs.v2.texcoord.x = vTexcoord_[cur++];
+			ia2vs.v2.texcoord.y = vTexcoord_[cur];
 
-			idx = m_vIndex[i++]; offset = idx * 3; cur = offset;
-			ia2vs.v3.position.x = m_vPosition[cur++];
-			ia2vs.v3.position.y = m_vPosition[cur++];
-			ia2vs.v3.position.z = m_vPosition[cur];
+			idx = vIndex_[i++]; offset = idx * 3; cur = offset;
+			ia2vs.v3.position.x = vPosition_[cur++];
+			ia2vs.v3.position.y = vPosition_[cur++];
+			ia2vs.v3.position.z = vPosition_[cur];
 			ia2vs.v3.position.w = 1.0f;
 			offset = idx * 3; cur = offset;
-			ia2vs.v3.normal.x = m_vNormal[cur++];
-			ia2vs.v3.normal.y = m_vNormal[cur++];
-			ia2vs.v3.normal.z = m_vNormal[cur];
+			ia2vs.v3.normal.x = vNormal_[cur++];
+			ia2vs.v3.normal.y = vNormal_[cur++];
+			ia2vs.v3.normal.z = vNormal_[cur];
 			offset = idx * 2; cur = offset;
-			ia2vs.v3.texcoord.x = m_vTexcoord[cur++];
-			ia2vs.v3.texcoord.y = m_vTexcoord[cur];
+			ia2vs.v3.texcoord.x = vTexcoord_[cur++];
+			ia2vs.v3.texcoord.y = vTexcoord_[cur];
 
 			VertexShader(ia2vs);
 		}
@@ -129,22 +126,22 @@ void Raster::VertexShader(IA2VS ia2vs)
 	vs2tas.v2 = ia2vs.v2;
 	vs2tas.v3 = ia2vs.v3;
 
-	Vector4f p1_clip_coord = ia2vs.v1.position*m_mWVP;
-	Vector4f p2_clip_coord = ia2vs.v2.position*m_mWVP;
-	Vector4f p3_clip_coord = ia2vs.v3.position*m_mWVP;
+	Vector4f p1_clip_coord = ia2vs.v1.position*mWVP_;
+	Vector4f p2_clip_coord = ia2vs.v2.position*mWVP_;
+	Vector4f p3_clip_coord = ia2vs.v3.position*mWVP_;
 
 	// normal won't change when:
 	// 1. translation
 	// 2. scale(all axis)
 	// normal needs mul matWorldView:
 	// 1. rotation
-	Vector3f p1_normal = ia2vs.v1.normal*m_m33World;
-	Vector3f p2_normal = ia2vs.v2.normal*m_m33World;
-	Vector3f p3_normal = ia2vs.v3.normal*m_m33World;
+	Vector3f p1_normal = ia2vs.v1.normal*m33World_;
+	Vector3f p2_normal = ia2vs.v2.normal*m33World_;
+	Vector3f p3_normal = ia2vs.v3.normal*m33World_;
 
-	Vector4f p1_posWorld = ia2vs.v1.position*m_mWorld;
-	Vector4f p2_posWorld = ia2vs.v2.position*m_mWorld;
-	Vector4f p3_posWorld = ia2vs.v3.position*m_mWorld;
+	Vector4f p1_posWorld = ia2vs.v1.position*mWorld_;
+	Vector4f p2_posWorld = ia2vs.v2.position*mWorld_;
+	Vector4f p3_posWorld = ia2vs.v3.position*mWorld_;
 
 	vs2tas.v1.position = p1_clip_coord;
 	vs2tas.v2.position = p2_clip_coord;
@@ -172,38 +169,32 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 	Vector4f &v1c = v1.position, &v2c = v2.position, &v3c = v3.position;
 	if (v1c.x > v1c.w &&
 		v2c.x > v2c.w &&
-		v3c.x > v3c.w)
-	{
+		v3c.x > v3c.w) {
 		return;
 	}
 	if (v1c.x < -v1c.w &&
 		v2c.x < -v2c.w &&
-		v3c.x < -v3c.w)
-	{
+		v3c.x < -v3c.w) {
 		return;
 	}
 	if (v1c.y > v1c.w &&
 		v2c.y > v2c.w &&
-		v3c.y > v3c.w)
-	{
+		v3c.y > v3c.w) {
 		return;
 	}
 	if (v1c.y < -v1c.w &&
 		v2c.y < -v2c.w &&
-		v3c.y < -v3c.w)
-	{
+		v3c.y < -v3c.w) {
 		return;
 	}
 	if (v1c.z > v1c.w &&
 		v2c.z > v2c.w &&
-		v3c.z > v3c.w)
-	{
+		v3c.z > v3c.w) {
 		return;
 	}
 	if (v1c.z < -v1c.w &&
 		v2c.z < -v2c.w &&
-		v3c.z < -v3c.w)
-	{
+		v3c.z < -v3c.w) {
 		return;
 	}
 
@@ -218,10 +209,8 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 	//   A + B*w = z0 => w = (z0 - A)/B	} => x0 = (z0 - A)/B	}
 	//   x0 = (1 - a)*x1 + a*x2									} => a = (A + B*x1 - z1)/(z2 - z1 + B*x1 - B*x2)
 	//   z0 = (1 - a)*z1 + a*z2									}
-	if (v1c.z < -v1c.w)
-	{
-		if (v2c.z < -v2c.w)
-		{
+	if (v1c.z < -v1c.w) {
+		if (v2c.z < -v2c.w) {
 			// v1 v2 out, v3 in
 			VtxProps v1_v3, v2_v3;
 			doZNearClip(v1, v3, v1_v3);
@@ -233,10 +222,8 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 			tasInternal.v3 = v3;
 			TriangleSetup_PostClip(tasInternal);
 		}
-		else
-		{
-			if (v3c.z < -v3c.w)
-			{
+		else {
+			if (v3c.z < -v3c.w) {
 				// v1 v3 out, v2 in
 				VtxProps v1_v2, v3_v2;
 				doZNearClip(v1, v2, v1_v2);
@@ -248,8 +235,7 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 				tasInternal.v3 = v3_v2;
 				TriangleSetup_PostClip(tasInternal);
 			}
-			else
-			{
+			else {
 				// v1 out, v2 v3 in
 				VtxProps v1_v2, v1_v3; // 1, 4
 				doZNearClip(v1, v2, v1_v2);
@@ -268,12 +254,9 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 			}
 		}
 	}
-	else
-	{
-		if (v2c.z < -v2c.w)
-		{
-			if (v3c.z < -v3c.w)
-			{
+	else {
+		if (v2c.z < -v2c.w) {
+			if (v3c.z < -v3c.w) {
 				// v2 v3 out, v1 in
 				VtxProps v2_v1, v3_v1;
 				doZNearClip(v2, v1, v2_v1);
@@ -285,8 +268,7 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 				tasInternal.v3 = v3_v1;
 				TriangleSetup_PostClip(tasInternal);
 			}
-			else
-			{
+			else {
 				// v2 out, v1 v3 in
 				VtxProps v2_v1, v2_v3;
 				doZNearClip(v2, v1, v2_v1);
@@ -304,10 +286,8 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 				TriangleSetup_PostClip(tasInternal);
 			}
 		}
-		else
-		{
-			if (v3c.z < -v3c.w)
-			{
+		else {
+			if (v3c.z < -v3c.w) {
 				// v3 out, v1 v2 in
 				VtxProps v3_v1, v3_v2;
 				doZNearClip(v3, v1, v3_v1);
@@ -324,8 +304,7 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 				tasInternal.v3 = v2;
 				TriangleSetup_PostClip(tasInternal);
 			}
-			else
-			{
+			else {
 				// No clipping
 				TASInternal tasInternal;
 				tasInternal.v1 = v1;
@@ -362,21 +341,21 @@ void Raster::TriangleSetup_PostClip(TASInternal tasInternal)
 	tas2ras.v1 = tasInternal.v1;
 	tas2ras.v2 = tasInternal.v2;
 	tas2ras.v3 = tasInternal.v3;
-	tas2ras.v1.position.x = m_consts.xk*p1_device_coord.x + m_consts.xb;
-	tas2ras.v1.position.y = m_consts.yk*p1_device_coord.y + m_consts.yb;
-	tas2ras.v1.position.z = m_consts.zk*p1_device_coord.z + m_consts.zb;
-	tas2ras.v2.position.x = m_consts.xk*p2_device_coord.x + m_consts.xb;
-	tas2ras.v2.position.y = m_consts.yk*p2_device_coord.y + m_consts.yb;
-	tas2ras.v2.position.z = m_consts.zk*p2_device_coord.z + m_consts.zb;
-	tas2ras.v3.position.x = m_consts.xk*p3_device_coord.x + m_consts.xb;
-	tas2ras.v3.position.y = m_consts.yk*p3_device_coord.y + m_consts.yb;
-	tas2ras.v3.position.z = m_consts.zk*p3_device_coord.z + m_consts.zb;
+	tas2ras.v1.position.x = consts_.xk*p1_device_coord.x + consts_.xb;
+	tas2ras.v1.position.y = consts_.yk*p1_device_coord.y + consts_.yb;
+	tas2ras.v1.position.z = consts_.zk*p1_device_coord.z + consts_.zb;
+	tas2ras.v2.position.x = consts_.xk*p2_device_coord.x + consts_.xb;
+	tas2ras.v2.position.y = consts_.yk*p2_device_coord.y + consts_.yb;
+	tas2ras.v2.position.z = consts_.zk*p2_device_coord.z + consts_.zb;
+	tas2ras.v3.position.x = consts_.xk*p3_device_coord.x + consts_.xb;
+	tas2ras.v3.position.y = consts_.yk*p3_device_coord.y + consts_.yb;
+	tas2ras.v3.position.z = consts_.zk*p3_device_coord.z + consts_.zb;
 
 	Rasterization(tas2ras);
 }
 
 /* Edge equation */
-void Raster::Rasterization(TAS2RAS tas2ras)
+void Raster::Rasterization(TAS2RAS tas2ras) 
 {
 	const float &x1 = tas2ras.v1.position.x;
 	const float &y1 = tas2ras.v1.position.y;
@@ -396,10 +375,10 @@ void Raster::Rasterization(TAS2RAS tas2ras)
 	// F12 + Dx12 > 0 at (x,y+1)
 
 	// bbox
-	int iMinX = static_cast<int>(floor(min(min(x1, x2), x3)));	iMinX = max(iMinX, m_viewport.x); // it works if whole bbox is clipped at TAS stage
-	int iMaxX = static_cast<int>(ceil(max(max(x1, x2), x3)));	iMaxX = min(iMaxX, m_viewport.x + m_viewport.w - 1);
-	int iMinY = static_cast<int>(floor(min(min(y1, y2), y3)));	iMinY = max(iMinY, m_viewport.y);
-	int iMaxY = static_cast<int>(ceil(max(max(y1, y2), y3)));	iMaxY = min(iMaxY, m_viewport.y + m_viewport.h - 1);
+	int iMinX = static_cast<int>(floor(min(min(x1, x2), x3)));	iMinX = max(iMinX, viewport_.x); // it works if whole bbox is clipped at TAS stage
+	int iMaxX = static_cast<int>(ceil(max(max(x1, x2), x3)));	iMaxX = min(iMaxX, viewport_.x + viewport_.w - 1);
+	int iMinY = static_cast<int>(floor(min(min(y1, y2), y3)));	iMinY = max(iMinY, viewport_.y);
+	int iMaxY = static_cast<int>(ceil(max(max(y1, y2), y3)));	iMaxY = min(iMaxY, viewport_.y + viewport_.h - 1);
 	// pixel center
 	float minX = (float)iMinX + 0.5f, maxX = (float)iMaxX - 0.5f;
 	float minY = (float)iMinY + 0.5f, maxY = (float)iMaxY - 0.5f;
@@ -418,16 +397,13 @@ void Raster::Rasterization(TAS2RAS tas2ras)
 	//float P2L31 = Dx31*y2 - Dy31*x2 + C31;
 
 	// walk through bbox
-	for (int j = iMinY; j <= iMaxY; j++)
-	{
+	for (int j = iMinY; j <= iMaxY; j++) {
 		col12 = row12;
 		col23 = row23;
 		col31 = row31;
-		for (int i = iMinX; i <= iMaxX; i++)
-		{
+		for (int i = iMinX; i <= iMaxX; i++) {
 			// clock-wise is F > 0, right side of the vector
-			if (col12 > 0 && col23 > 0 && col31 > 0)
-			{
+			if (col12 > 0 && col23 > 0 && col31 > 0) {
 				float x = (float)i + 0.5f, y = (float)j + 0.5f;
 				// Barycentric coordinate:
 				// a + b + c = 1
@@ -445,10 +421,9 @@ void Raster::Rasterization(TAS2RAS tas2ras)
 				VtxProps &v3 = tas2ras.v3;
 				// Depth test
 				float depth = a*v3.position.z + b*v1.position.z + c*v2.position.z;
-				if (depth < m_drawBuffer.pDepthbuffer[i + j*m_drawBuffer.width])
-				{
+				if (depth < drawBuffer_.pDepthbuffer[i + j*drawBuffer_.width]) {
 					// Draw depth
-					m_drawBuffer.pDepthbuffer[i + j*m_drawBuffer.width] = depth;
+					drawBuffer_.pDepthbuffer[i + j*drawBuffer_.width] = depth;
 
 					// Interp props
 					// f = (a*fa / wa + b*fb / wb + c*fc / wc) / (a / wa + b / wb + c / wc)
@@ -473,8 +448,7 @@ void Raster::Rasterization(TAS2RAS tas2ras)
 					//PixelShader_fresnel(ras2ps);
 					PixelShader_cook_torrance(ras2ps);
 				}
-				else
-				{
+				else {
 					;
 				}
 			}
@@ -519,7 +493,7 @@ void Raster::PixelShader(RAS2PS ras2ps)
 	color.a = clamp(color.a, 0.0f, 1.0f);
 
 	// OM
-	m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width] = color;
+	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = color;
 
 	//char str[64];
 	//sprintf_s(str, 64, "x:%d y:%d\n", x, y);
@@ -562,14 +536,14 @@ void Raster::PixelShader_fresnel(RAS2PS ras2ps)
 	color.a = clamp(color.a, 0.0f, 1.0f);
 
 	// OM
-	m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width] = color;
+	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = color;
 
 	//char str[64];
 	//sprintf_s(str, 64, "x:%d y:%d\n", x, y);
 	//OutputDebugString(str);
 }
 
-void Raster::PixelShader_cook_torrance(RAS2PS ras2ps)
+void Raster::PixelShader_cook_torrance(RAS2PS ras2ps) 
 {
 	int x = ras2ps.p.coord.x;
 	int y = ras2ps.p.coord.y;
@@ -630,7 +604,7 @@ void Raster::PixelShader_cook_torrance(RAS2PS ras2ps)
 	color.a = clamp(color.a, 0.0f, 1.0f);
 
 	// OM
-	m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width] = color;
+	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = color;
 
 	//char str[64];
 	//sprintf_s(str, 64, "x:%d y:%d\n", x, y);
@@ -645,21 +619,20 @@ void Raster::OutputMerger(PS2OM ps2om)
 
 void Raster::clearColor(float r, float g, float b, float a)
 {
-	for (int y = 0; y < m_drawBuffer.height; y++)
-		for (int x = 0; x < m_drawBuffer.width; x++)
-		{
-			m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].r = r;
-			m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].g = g;
-			m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].b = b;
-			m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].a = a;
+	for (int y = 0; y < drawBuffer_.height; y++)
+		for (int x = 0; x < drawBuffer_.width; x++) {
+			drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].r = r;
+			drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].g = g;
+			drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].b = b;
+			drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].a = a;
 		}
 }
 
 void Raster::clearDepthf(float d)
 {
-	for (int y = 0; y < m_drawBuffer.height; y++)
-		for (int x = 0; x < m_drawBuffer.width; x++)
-			m_drawBuffer.pDepthbuffer[x + y*m_drawBuffer.width] = d;
+	for (int y = 0; y < drawBuffer_.height; y++)
+		for (int x = 0; x < drawBuffer_.width; x++)
+			drawBuffer_.pDepthbuffer[x + y*drawBuffer_.width] = d;
 }
 
 void Raster::draw()
@@ -671,39 +644,38 @@ void Raster::draw()
 
 void Raster::initStatesAndInternalConstants()
 {
-	m_mWVP = m_mWorld*m_mView*m_mProj;
-	Matrix4x4 mat4x4_worldView = m_mWorld*m_mView;
-	m_m33WV = mat4x4_worldView.toMatrix3x3();
-	m_m33World = m_mWorld.toMatrix3x3();
+	mWVP_ = mWorld_*mView_*mProj_;
+	Matrix4x4 mat4x4_worldView = mWorld_*mView_;
+	m33WV_ = mat4x4_worldView.toMatrix3x3();
+	m33World_ = mWorld_.toMatrix3x3();
 
-	float B = m_mProj.m33, A = m_mProj.m43;
-	m_zNear = -(A / (1.0f + B));
+	float B = mProj_.m33, A = mProj_.m43;
+	zNear_ = -(A / (1.0f + B));
 
-	m_consts.xk = static_cast<float>(m_viewport.w / 2);
-	m_consts.xb = static_cast<float>(m_viewport.x + m_viewport.w / 2);
-	m_consts.yk = static_cast<float>(m_viewport.h / 2);
-	m_consts.yb = static_cast<float>(m_viewport.y + m_viewport.h / 2);
-	m_consts.zk = 0.5f*(m_viewport.zf - m_viewport.zn);
-	m_consts.zb = 0.5f*(m_viewport.zn + m_viewport.zf);
+	consts_.xk = static_cast<float>(viewport_.w / 2);
+	consts_.xb = static_cast<float>(viewport_.x + viewport_.w / 2);
+	consts_.yk = static_cast<float>(viewport_.h / 2);
+	consts_.yb = static_cast<float>(viewport_.y + viewport_.h / 2);
+	consts_.zk = 0.5f*(viewport_.zf - viewport_.zn);
+	consts_.zb = 0.5f*(viewport_.zn + viewport_.zf);
 }
 
 void Raster::setViewport(int x, int y, int w, int h)
 {
-	m_viewport.x = x;
-	m_viewport.y = y;
-	m_viewport.w = w;
-	m_viewport.h = h;
+	viewport_.x = x;
+	viewport_.y = y;
+	viewport_.w = w;
+	viewport_.h = h;
 
-	if (m_viewport.w != m_drawBuffer.width ||
-		m_viewport.h != m_drawBuffer.height)
-	{
-		delete[]m_drawBuffer.pColorbuffer;
-		delete[]m_drawBuffer.pDepthbuffer;
-		m_drawBuffer.width = m_viewport.w;
-		m_drawBuffer.height = m_viewport.h;
-		m_drawBuffer.pColorbuffer = new Color4f[m_drawBuffer.width*m_drawBuffer.height];
+	if (viewport_.w != drawBuffer_.width ||
+		viewport_.h != drawBuffer_.height) {
+		delete[]drawBuffer_.pColorbuffer;
+		delete[]drawBuffer_.pDepthbuffer;
+		drawBuffer_.width = viewport_.w;
+		drawBuffer_.height = viewport_.h;
+		drawBuffer_.pColorbuffer = new Color4f[drawBuffer_.width*drawBuffer_.height];
 		clearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		m_drawBuffer.pDepthbuffer = new float[m_drawBuffer.width*m_drawBuffer.height];
+		drawBuffer_.pDepthbuffer = new float[drawBuffer_.width*drawBuffer_.height];
 		clearDepthf(1.0f);
 	}
 }
@@ -719,7 +691,7 @@ void Raster::setModelMat(
 		_m21, _m22, _m23, _m24,
 		_m31, _m32, _m33, _m34,
 		_m41, _m42, _m43, _m44);
-	m_mWorld = m;
+	mWorld_ = m;
 }
 
 void Raster::setViewMat(
@@ -733,7 +705,7 @@ void Raster::setViewMat(
 		_m21, _m22, _m23, _m24,
 		_m31, _m32, _m33, _m34,
 		_m41, _m42, _m43, _m44);
-	m_mView = m;
+	mView_ = m;
 }
 
 void Raster::setProjMat(
@@ -747,82 +719,75 @@ void Raster::setProjMat(
 		_m21, _m22, _m23, _m24,
 		_m31, _m32, _m33, _m34,
 		_m41, _m42, _m43, _m44);
-	m_mProj = m;
+	mProj_ = m;
 }
 
 void Raster::setVertexAttribs(
-	std::vector<float> &vPos, int iPosChn,
-	std::vector<float> &vNorm, int iNormChn,
-	std::vector<float> &vTC, int iTCChn,
-	std::vector<int> &vIdx)
+	std::vector<float> const &vPos, int iPosChn,
+	std::vector<float> const &vNorm, int iNormChn,
+	std::vector<float> const &vTC, int iTCChn,
+	std::vector<int> const &vIdx)
 {
-	m_vPosition = vPos;	m_iPosChn = iPosChn;
-	m_vNormal = vNorm;	m_iNormChn = iNormChn;
-	m_vTexcoord = vTC;	m_iTCChn = iTCChn;
-	m_vIndex = vIdx;
+	vPosition_ = vPos;	iPosChn_ = iPosChn;
+	vNormal_ = vNorm;	iNormChn_ = iNormChn;
+	vTexcoord_ = vTC;	iTCChn_ = iTCChn;
+	vIndex_ = vIdx;
 
 	assert(false == vPos.empty());
-	m_iVertexCount = vPos.size() / 3;
+	iVertexCount_ = vPos.size() / 3;
 
 	assert(vIdx.size() % 3 == 0);
 	if (vIdx.empty())
-		m_iPrimitiveCount = vPos.size() / 3;
+		iPrimitiveCount_ = vPos.size() / 3;
 	else
-		m_iPrimitiveCount = vIdx.size() / 3;
+		iPrimitiveCount_ = vIdx.size() / 3;
 
 	// fill empty vectors
-	if (vNorm.empty())
-	{
-		for (int i = 0; i < m_iVertexCount; i++)
-		{
-			m_vNormal.push_back(0.0f);
-			m_vNormal.push_back(0.0f);
-			m_vNormal.push_back(0.0f);
+	if (vNorm.empty()) {
+		for (int i = 0; i < iVertexCount_; i++) {
+			vNormal_.push_back(0.0f);
+			vNormal_.push_back(0.0f);
+			vNormal_.push_back(0.0f);
 		}
 	}
 
-	if (vTC.empty())
-	{
-		for (int i = 0; i < m_iVertexCount; i++)
-		{
-			m_vTexcoord.push_back(0.0f);
-			m_vTexcoord.push_back(0.0f);
+	if (vTC.empty()) {
+		for (int i = 0; i < iVertexCount_; i++) {
+			vTexcoord_.push_back(0.0f);
+			vTexcoord_.push_back(0.0f);
 		}
 	}
 }
 
-void Raster::setTexture(std::vector<float> &tex, int iTexChn, int w, int h, int idx)
+void Raster::setTexture(std::vector<float> const &tex, int iTexChn, int w, int h, int idx)
 {
-	m_tex[idx].texData = tex;
-	m_tex[idx].iChn = iTexChn;
-	m_tex[idx].width = w;
-	m_tex[idx].height = h;
+	tex_[idx].texData = tex;
+	tex_[idx].idx = iTexChn;
+	tex_[idx].width = w;
+	tex_[idx].height = h;
 }
 
 void Raster::dumpRT2BMP(const char *path)
 {
 	const int bitCount = 24;
-	const int width = m_drawBuffer.width;
-	const int height = m_drawBuffer.height;
+	const int width = drawBuffer_.width;
+	const int height = drawBuffer_.height;
 	const int pitchInBytes = bitCount / 8;
 
 	char *color = new char[width*height * 3];
 	char *p = color;
-	for (int y = 0; y < height; y++)
-	{
-		for (int x = 0; x < width; x++)
-		{
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
 			// BGR for RGB
-			*p++ = static_cast<char>(m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].b*255.0f);
-			*p++ = static_cast<char>(m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].g*255.0f);
-			*p++ = static_cast<char>(m_drawBuffer.pColorbuffer[x + y*m_drawBuffer.width].r*255.0f);
+			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].b*255.0f);
+			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].g*255.0f);
+			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].r*255.0f);
 		}
 	}
 
 	// bmp header
 	std::fstream bmpOutput(path, std::ios::out | std::ios::binary);
-	if (true == bmpOutput.fail())
-	{
+	if (true == bmpOutput.fail()) {
 		OutputDebugString("Open output file failed!\n");
 		return;
 	}

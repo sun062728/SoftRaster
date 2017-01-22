@@ -59,8 +59,7 @@ namespace Utils
 		float aspectRatio,		// w/h
 		float zn,
 		float zf,
-		Matrix4x4 &mat
-	)
+		Matrix4x4 &mat)
 	{
 		float cot = 1.0f / tan(thetaInDegree / 180.0f*PI);
 		mat.clear();

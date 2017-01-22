@@ -8,15 +8,18 @@ class ObjLoader
 {
 public:
 	ObjLoader(std::string filePath);
-	int getObjectNum() const{
+	int getObjectNum() const
+	{
 		return vObject_.size();
 	}
-	int getGroupNum(unsigned int o) const {
+	int getGroupNum(unsigned int o) const 
+	{
 		if (o >= vObject_.size() || o < 0)
 			return -1;
 		return vObject_[o].vGroup.size();
 	}
-	bool getMeshName(unsigned int o, unsigned int g, char *p, int len) const {
+	bool getMeshName(unsigned int o, unsigned int g, char *p, int len) const
+	{
 		if (o >= vObject_.size() || o < 0)
 			return false;
 		if (g >= vObject_[o].vGroup.size() || g < 0)
@@ -31,7 +34,8 @@ public:
 		std::vector<float> &p, int &iPC,
 		std::vector<float> &n, int &iNC,
 		std::vector<float> &t, int &iTC,
-		std::vector<int> &i) const {
+		std::vector<int> &i) const
+	{
 		if (o >= vObject_.size() || o < 0)
 			return false;
 		if (g >= vObject_[o].vGroup.size() || g < 0)
@@ -47,7 +51,8 @@ public:
 private:
 	struct Group
 	{
-		enum FaceType {
+		enum FaceType
+		{
 			FT_V = 1,
 			FT_VT,
 			FT_VN,
@@ -63,7 +68,8 @@ private:
 		std::string			sGroupName;
 		FaceType			faceType;
 
-		void clear() {
+		void clear()
+		{
 			vPosition.clear();
 			vNormal.clear();
 			vTexcoord.clear();
@@ -71,7 +77,8 @@ private:
 			sGroupName.clear();
 		}
 
-		bool empty() const {
+		bool empty() const
+		{
 			return (
 				vPosition.empty() &&
 				vNormal.empty() &&
@@ -80,7 +87,8 @@ private:
 				sGroupName.empty());
 		}
 
-		void checkFaceType(FaceType ft) {
+		void checkFaceType(FaceType ft)
+		{
 			faceType == 0 ? faceType = ft : assert(faceType == ft);
 		}
 	};
@@ -90,12 +98,14 @@ private:
 		std::vector<Group>	vGroup;
 		std::string			sObjectName;
 
-		void clear() {
+		void clear()
+		{
 			vGroup.clear();
 			sObjectName.clear();
 		}
 
-		bool empty() {
+		bool empty() 
+		{
 			return vGroup.empty() && sObjectName.empty();
 		}
 	};
@@ -114,7 +124,8 @@ private:
 
 	void parse(std::fstream &obj);
 
-	inline int readFloats(char *p, std::vector<float> &vec) {
+	inline int readFloats(char *p, std::vector<float> &vec)
+	{
 		int i = 0; --p;
 		do {
 			vec.push_back(static_cast<float>(atof(++p)));
@@ -124,19 +135,22 @@ private:
 		return i;
 	}
 
-	inline void pushPos(Group &g, int faceIdx) {
+	inline void pushPos(Group &g, int faceIdx)
+	{
 		int offset = (--faceIdx)*iPosChn_;
 		for (int i = 0; i < iPosChn_; i++)
 			g.vPosition.push_back(vPosition_[offset + i]);
 	}
 
-	inline void pushNorm(Group &g, int faceIdx) {
+	inline void pushNorm(Group &g, int faceIdx)
+	{
 		int offset = (--faceIdx)*iNormChn_;
 		for (int i = 0; i < iNormChn_; i++)
 			g.vNormal.push_back(vNormal_[offset + i]);
 	}
 
-	inline void pushTexcoord(Group &g, int faceIdx) {
+	inline void pushTexcoord(Group &g, int faceIdx)
+	{
 		int offset = (--faceIdx)*iTCChn_;
 		for (int i = 0; i < iTCChn_; i++)
 			g.vTexcoord.push_back(vTexcoord_[offset + i]);
@@ -144,7 +158,8 @@ private:
 
 	void readFaceElement(char *p, Group &g);
 
-	inline void endGrp() {
+	inline void endGrp()
+	{
 		Group &g = grp_;
 		Object &o = obj_;
 
@@ -155,7 +170,8 @@ private:
 		g.clear();
 	}
 
-	inline void endObj() {
+	inline void endObj() 
+	{
 		Object &o = obj_;
 
 		vObject_.push_back(o);

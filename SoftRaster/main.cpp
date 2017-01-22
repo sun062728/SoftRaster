@@ -6,7 +6,8 @@
 #include "Utils\Vector.hpp"
 #include "Utils\Utils.hpp"
 
-void test() {
+void test()
+{
 	Vector2f texcoord(0.4f, 0.5f);
 }
 
@@ -64,11 +65,9 @@ int main()
 
 	// vb
 	unsigned int maxObjNum = objLoader.getObjectNum();
-	for (unsigned int iObj = 0; iObj < maxObjNum; iObj++)
-	{
+	for (unsigned int iObj = 0; iObj < maxObjNum; iObj++) {
 		unsigned int maxGrpNum = objLoader.getGroupNum(iObj);
-		for (unsigned int iGrp = 0; iGrp < maxGrpNum; iGrp++)
-		{
+		for (unsigned int iGrp = 0; iGrp < maxGrpNum; iGrp++) {
 			char szMeshName[1024];
 			if (false == objLoader.getMeshName(iObj, iGrp, szMeshName, 1024))
 				assert(0);

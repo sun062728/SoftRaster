@@ -1,6 +1,7 @@
 #include "ObjLoader.hpp"
 
-ObjLoader::ObjLoader(std::string filePath) {
+ObjLoader::ObjLoader(std::string filePath) 
+{
 	std::fstream obj(filePath, std::ios::in);
 	if (!obj) {
 		assert(0);
@@ -9,7 +10,8 @@ ObjLoader::ObjLoader(std::string filePath) {
 	parse(obj);
 }
 
-void ObjLoader::parse(std::fstream &obj) {
+void ObjLoader::parse(std::fstream &obj)
+{
 	const int MAX_LINE_SIZE = 256;
 	char line[MAX_LINE_SIZE];
 	Object &o = obj_;
@@ -17,8 +19,7 @@ void ObjLoader::parse(std::fstream &obj) {
 
 	obj.getline(line, MAX_LINE_SIZE);
 
-	while (!obj.eof())
-	{
+	while (!obj.eof()) {
 		char *cur = line;
 		switch (*cur++)	{
 		case 'v':
@@ -105,7 +106,8 @@ void ObjLoader::parse(std::fstream &obj) {
 	endObj();
 }
 
-void ObjLoader::readFaceElement(char *p, Group &g) {
+void ObjLoader::readFaceElement(char *p, Group &g)
+{
 	char *pSlash1, *pSlash2;
 	if (pSlash1 = strchr(p, '/')) {
 		if (pSlash2 = strchr(pSlash1 + 1, '/'))	{

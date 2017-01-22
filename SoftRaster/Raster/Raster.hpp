@@ -13,8 +13,8 @@ public:
 	Raster();
 	~Raster()
 	{
-		delete[] m_drawBuffer.pColorbuffer;
-		delete[] m_drawBuffer.pDepthbuffer;
+		delete[] drawBuffer_.pColorbuffer;
+		delete[] drawBuffer_.pDepthbuffer;
 	}
 	void setModelMat(
 		float _m11, float _m12, float _m13, float _m14,
@@ -33,11 +33,11 @@ public:
 		float _m41, float _m42, float _m43, float _m44);
 	void setViewport(int x, int y, int w, int h);
 	void setVertexAttribs(
-		std::vector<float> &vPos, int iPosChn,
-		std::vector<float> &vNorm, int iNormChn,
-		std::vector<float> &vTC, int iTCChn,
-		std::vector<int> &vIdx);
-	void setTexture(std::vector<float> &tex, int iTexChn, int w, int h, int idx);
+		std::vector<float> const &vPos, int iPosChn,
+		std::vector<float> const &vNorm, int iNormChn,
+		std::vector<float> const &vTC, int iTCChn,
+		std::vector<int> const &vIdx);
+	void setTexture(std::vector<float> const &tex, int iTexChn, int w, int h, int idx);
 	void clearColor(float r, float g, float b, float a);
 	void clearDepthf(float d);
 	void draw();
@@ -99,68 +99,61 @@ private:
 		float zn, zf;
 	};
 
-	class Framebuffer
+	struct Framebuffer
 	{
-	public:
 		Color4f		*pColorbuffer;
 		float		*pDepthbuffer;
 		int			width;
 		int			height;
 
-		Framebuffer() :width(0), height(0)
-		{	}
+		Framebuffer() :width(0), height(0) {	}
 	};
 
-	class Texture2D
+	struct Texture2D
 	{
-	public:
 		std::vector<float>	texData;
-		int					iChn;
+		int					idx;
 		int					width;
 		int					height;
 	};
 
-	typedef struct _GlobalConsts
+	struct GlobalConsts
 	{
 		/* Viewport */
-		float	xk;
-		float	yk;
-		float	xb;
-		float	yb;
-		float	zk;
-		float	zb;
-	}GlobalConsts;
+		float	xk,	yk, zk;
+		float	xb,	yb, zb;
+	};
 
 	/* Input */
-	std::vector<float>	m_vPosition;
-	std::vector<float>	m_vNormal;
-	std::vector<float>	m_vTexcoord;
-	std::vector<int>	m_vIndex;
-	int					m_iPosChn;
-	int					m_iNormChn;
-	int					m_iTCChn;
+	std::vector<float>	vPosition_;
+	std::vector<float>	vNormal_;
+	std::vector<float>	vTexcoord_;
+	std::vector<int>	vIndex_;
+	int					iPosChn_;
+	int					iNormChn_;
+	int					iTCChn_;
 
 	/* Statistics */
-	int					m_iVertexCount;
-	int					m_iPrimitiveCount;
+	int					iVertexCount_;
+	int					iPrimitiveCount_;
 
 	/* Internal data */
-	Framebuffer			m_drawBuffer;
+	Framebuffer			drawBuffer_;
 
 	/* States */
-	Matrix4x4			m_mWorld;
-	Matrix4x4			m_mView;
-	Matrix4x4			m_mProj;
-	Matrix4x4			m_mWVP;
-	Matrix3x3			m_m33WV;
-	Matrix3x3			m_m33World;
-	Viewport			m_viewport;
-	Texture2D			m_tex[16];
+	Matrix4x4			mWorld_;
+	Matrix4x4			mView_;
+	Matrix4x4			mProj_;
+	Matrix4x4			mWVP_;
+	Matrix3x3			m33WV_;
+	Matrix3x3			m33World_;
+	Viewport			viewport_;
+	Texture2D			tex_[16];
 
-	float				m_zNear;
+	float				zNear_;
 
 	/* Consts */
-	GlobalConsts		m_consts;
+	GlobalConsts		consts_;
 
 	/* Stages */
 	void InputAssembler();
@@ -178,7 +171,7 @@ private:
 	void initStatesAndInternalConstants();
 	inline void doZNearClip(const VtxProps &v1, const VtxProps &v2, VtxProps &vC)
 	{
-		float &zn = m_zNear;
+		float &zn = zNear_;
 		float alpha = (zn + v1.position.z) / (v1.position.z - v2.position.z);
 		float oneMinusAlpha = 1.0f - alpha;
 
@@ -186,7 +179,7 @@ private:
 		vC.position.y = oneMinusAlpha*v1.position.y + alpha*v2.position.y;
 		vC.position.z = oneMinusAlpha*v1.position.z + alpha*v2.position.z;
 		vC.position.w = oneMinusAlpha*v1.position.w + alpha*v2.position.w; // CHECK IF w == zNear!!!
-																		   ///assert(vC.position.w == m_zNear);
+		///assert(vC.position.w == m_zNear);
 		vC.normal.x = oneMinusAlpha*v1.normal.x + alpha*v2.normal.x;
 		vC.normal.y = oneMinusAlpha*v1.normal.y + alpha*v2.normal.y;
 		vC.normal.z = oneMinusAlpha*v1.normal.z + alpha*v2.normal.z;
@@ -199,21 +192,21 @@ private:
 	}
 
 	// nearest sampler
-	inline Color4f tex2D(const Vector2f &v, int i/* Tex idx*/)
+	inline Color4f tex2D(const Vector2f &v, int i/* Tex idx*/) 
 	{
-		Texture2D &tex = m_tex[i];
+		Texture2D &tex = tex_[i];
 		if (tex.texData.size() == 0)
 			return Color4f(1.0f, 0.0f, 1.0f, 1.0f);
 
 		Vector2f frac(v.x - floor(v.x), v.y - floor(v.y));
-		Vector2i pos((int)floor(frac.x*m_tex[i].width), (int)floor(frac.y*m_tex[i].height));
-		int offset = (pos.x + pos.y*tex.height)*tex.iChn;
+		Vector2i pos((int)floor(frac.x*tex_[i].width), (int)floor(frac.y*tex_[i].height));
+		int offset = (pos.x + pos.y*tex.height)*tex.idx;
 		// default RGBA
 		Color4f color(tex.texData[offset], tex.texData[offset + 1], tex.texData[offset + 2], tex.texData[offset + 3]);
 		return color;
 	}
 
-	inline float clamp(float f, float min, float max)
+	inline float clamp(float f, float min, float max) const
 	{
 		assert(min < max);
 		return f > max ? max : (f < min ? min : f);
