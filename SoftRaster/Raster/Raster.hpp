@@ -43,6 +43,15 @@ public:
 	void draw();
 	void dumpRT2BMP(const char *path);
 
+	void setPSEyePos(Vector3f v);
+	void setPSLightDir(Vector3f v);
+	void setPSBaseColor(Color4f c);
+	void setPSDiffuseColor(Color4f c);
+	void setPSLightColor(Color4f c);
+	void setPSSpecularPower(int f);
+
+	void isLeftHand(bool is);
+
 private:
 
 	/* module interface */
@@ -124,6 +133,15 @@ private:
 		float	xb,	yb, zb;
 	};
 
+	struct PSLighting {
+		Vector3f eyePos;
+		Vector3f lightDir;
+		Color4f baseColor;
+		Color4f diffuseColor;
+		Color4f lightColor;
+		float specularPower;
+	};
+
 	/* Input */
 	std::vector<float>	vPosition_;
 	std::vector<float>	vNormal_;
@@ -151,9 +169,16 @@ private:
 	Texture2D			tex_[16];
 
 	float				zNear_;
+	float				fLeftHand_;	// left hand coordinate is default
+									// if not, need flip z in transform
+									// and winding in raster stage
+									// left: 1.0f, right: -1.0f
 
 	/* Consts */
 	GlobalConsts		consts_;
+
+	/* PS lighting property */
+	PSLighting psLighting_;
 
 	/* Stages */
 	void InputAssembler();

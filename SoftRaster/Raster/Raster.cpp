@@ -352,8 +352,8 @@ void Raster::TriangleSetup_PostClip(TASInternal tasInternal)
 	tas2ras.v3.position.y = consts_.yk*p3_device_coord.y + consts_.yb;
 	tas2ras.v3.position.z = consts_.zk*p3_device_coord.z + consts_.zb;
 
-	//Rasterization_float(tas2ras);
-	Rasterization_integer(tas2ras);
+	Rasterization_float(tas2ras);
+	//Rasterization_integer(tas2ras);
 }
 
 /* Edge equation */
@@ -405,7 +405,7 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 		col31 = row31;
 		for (int i = iMinX; i <= iMaxX; i++) {
 			// clock-wise is F > 0, right side of the vector
-			if (col12 > 0 && col23 > 0 && col31 > 0) {
+			if (col12*fLeftHand_ > 0 && col23*fLeftHand_ > 0 && col31*fLeftHand_ > 0) {
 				float x = (float)i + 0.5f, y = (float)j + 0.5f;
 				// Barycentric coordinate:
 				// a + b + c = 1
@@ -465,7 +465,6 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 	}
 }
 
-/* Edge equation */
 void Raster::Rasterization_integer(TAS2RAS tas2ras)
 {
 	const float &x1 = tas2ras.v1.position.x;
@@ -633,17 +632,17 @@ void Raster::PixelShader_fresnel(RAS2PS ras2ps)
 
 void Raster::PixelShader_cook_torrance(RAS2PS ras2ps) 
 {
+	/*************** Geometry **************/
 	int x = ras2ps.p.coord.x;
 	int y = ras2ps.p.coord.y;
 	Vector3f posWorld(ras2ps.p.posWorld.x, ras2ps.p.posWorld.y, ras2ps.p.posWorld.z); // save pos in world for later use
 	Vector3f normal = ras2ps.p.normal;
 	Vector2f texCoord = ras2ps.p.texcoord;
-	Vector3f lightDir(0.0f, -1.0f, -0.0f); // World coordinate
+	Vector3f lightDir = psLighting_.lightDir;
 	lightDir = -lightDir;
-	Color4f lightColor(1.0f, 1.0f, 1.0f, 1.0f);
+	Color4f lightColor = psLighting_.lightColor;
 
-	Vector3f eyePos(0.0f, 2.0f, 2.0f);
-	//Vector3f viewDir(0.0f, 1.0f, 2.0f);
+	Vector3f eyePos = psLighting_.eyePos;
 	Vector3f viewDir = eyePos - posWorld;
 	viewDir = viewDir.normalize();
 
@@ -656,13 +655,11 @@ void Raster::PixelShader_cook_torrance(RAS2PS ras2ps)
 	Reflection = Reflection.normalize();
 	float RDotV = max(0.0f, Reflection.dot(viewDir));
 
-	Color4f BaseColor;
-	//BaseColor = tex2D(texCoord, 0);
-	BaseColor = Color4f(0.0f, 0.1f, 0.3f, 1.0f);
-
+	/*************** Color *****************/
+	Color4f BaseColor = psLighting_.baseColor; //BaseColor = tex2D(texCoord, 0);
 	Color4f TotalAmbient = BaseColor*0.0f;
-	Color4f Diffuse(0.88f, 0.88f, 0.88f, 1.0f);
-	Color4f TotalSpecular = lightColor*pow(RDotV, 25);
+	Color4f Diffuse = psLighting_.diffuseColor;
+	Color4f TotalSpecular = lightColor*pow(RDotV, psLighting_.specularPower);
 
 	// Cook-torrance
 	Vector3f Half = lightDir + viewDir;
@@ -726,20 +723,26 @@ void Raster::clearDepthf(float d)
 void Raster::draw()
 {
 	initStatesAndInternalConstants();
-	// Let's go!
+	// first stage
 	InputAssembler();
 }
 
 void Raster::initStatesAndInternalConstants()
 {
+	// setup coordinate system
+	Matrix4x4 mTrans;
+	mTrans.identity();
+	mTrans.m33 = fLeftHand_;
+	mWorld_ = mWorld_*mTrans;
+	// setup matrices
 	mWVP_ = mWorld_*mView_*mProj_;
 	Matrix4x4 mat4x4_worldView = mWorld_*mView_;
 	m33WV_ = mat4x4_worldView.toMatrix3x3();
 	m33World_ = mWorld_.toMatrix3x3();
-
+	// get zNear
 	float B = mProj_.m33, A = mProj_.m43;
 	zNear_ = -(A / (1.0f + B));
-
+	// set viewport consts
 	consts_.xk = static_cast<float>(viewport_.w / 2);
 	consts_.xb = static_cast<float>(viewport_.x + viewport_.w / 2);
 	consts_.yk = static_cast<float>(viewport_.h / 2);
@@ -909,4 +912,39 @@ void Raster::dumpRT2BMP(const char *path)
 	bmpOutput.close();
 
 	return;
+}
+
+void Raster::setPSEyePos(Vector3f v)
+{
+	psLighting_.eyePos = v;
+}
+
+void Raster::setPSLightDir(Vector3f v)
+{
+	psLighting_.lightDir = v;
+}
+
+void Raster::setPSBaseColor(Color4f c) 
+{
+	psLighting_.baseColor = c;
+}
+
+void Raster::setPSDiffuseColor(Color4f c)
+{
+	psLighting_.diffuseColor = c;
+}
+
+void Raster::setPSLightColor(Color4f c)
+{
+	psLighting_.lightColor = c;
+}
+
+void Raster::setPSSpecularPower(int f)
+{
+	psLighting_.specularPower = f;
+}
+
+void Raster::isLeftHand(bool b)
+{
+	b ? fLeftHand_ = 1.0f : fLeftHand_ = -1.0f;
 }
