@@ -19,8 +19,7 @@ struct Matrix2x2
 	float m11, m12;
 	float m21, m22;
 
-	Matrix2x2()
-		:m11(0.0f), m12(0.0f), m21(0.0f), m22(0.0f) {}
+	Matrix2x2() = default;
 
 	Matrix2x2(float _m11, float _m12, float _m21, float _m22)
 		:m11(_m11), m12(_m12),	m21(_m21), m22(_m22) {}
@@ -79,11 +78,7 @@ struct Matrix3x3
 	float m21, m22, m23;
 	float m31, m32, m33;
 
-	Matrix3x3() :
-		m11(0.0f), m12(0.0f), m13(0.0f),
-		m21(0.0f), m22(0.0f), m23(0.0f),
-		m31(0.0f), m32(0.0f), m33(0.0f)
-	{	}
+	Matrix3x3() = default;
 
 	Matrix3x3(
 		float _m11, float _m12, float _m13,
@@ -183,12 +178,7 @@ struct Matrix4x4
 	float m31, m32, m33, m34;
 	float m41, m42, m43, m44;
 
-	Matrix4x4() :
-		m11(0.0f), m12(0.0f), m13(0.0f), m14(0.0f),
-		m21(0.0f), m22(0.0f), m23(0.0f), m24(0.0f),
-		m31(0.0f), m32(0.0f), m33(0.0f), m34(0.0f),
-		m41(0.0f), m42(0.0f), m43(0.0f), m44(0.0f)
-	{	}
+	Matrix4x4() = default;
 
 	Matrix4x4(
 		float _m11, float _m12, float _m13, float _m14,

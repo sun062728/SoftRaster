@@ -17,9 +17,9 @@ void ObjLoader::parse(std::fstream &obj)
 	Object &o = obj_;
 	Group  &g = grp_;
 
-	obj.getline(line, MAX_LINE_SIZE);
+	do{
+		obj.getline(line, MAX_LINE_SIZE);
 
-	while (!obj.eof()) {
 		char *cur = line;
 		switch (*cur++)	{
 		case 'v':
@@ -100,8 +100,7 @@ void ObjLoader::parse(std::fstream &obj)
 			assert(0);
 			break;
 		}
-		obj.getline(line, MAX_LINE_SIZE);
-	}
+	} while (!obj.eof());
 	endGrp();
 	endObj();
 }

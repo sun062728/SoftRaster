@@ -16,7 +16,8 @@ public:
 	{
 		if (o >= vObject_.size() || o < 0)
 			return -1;
-		return vObject_[o].vGroup.size();
+		else
+			return vObject_[o].vGroup.size();
 	}
 	bool getMeshName(unsigned int o, unsigned int g, char *p, int len) const
 	{

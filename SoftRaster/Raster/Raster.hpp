@@ -7,6 +7,10 @@
 #include "../Utils/Matrix.hpp"
 #include "../Utils/Vector.hpp"
 
+/*
+** Left-hand coordinate system
+** Clock-wise winding is default
+*/
 class Raster
 {
 public:
@@ -16,21 +20,9 @@ public:
 		delete[] drawBuffer_.pColorbuffer;
 		delete[] drawBuffer_.pDepthbuffer;
 	}
-	void setModelMat(
-		float _m11, float _m12, float _m13, float _m14,
-		float _m21, float _m22, float _m23, float _m24,
-		float _m31, float _m32, float _m33, float _m34,
-		float _m41, float _m42, float _m43, float _m44);
-	void setViewMat(
-		float _m11, float _m12, float _m13, float _m14,
-		float _m21, float _m22, float _m23, float _m24,
-		float _m31, float _m32, float _m33, float _m34,
-		float _m41, float _m42, float _m43, float _m44);
-	void setProjMat(
-		float _m11, float _m12, float _m13, float _m14,
-		float _m21, float _m22, float _m23, float _m24,
-		float _m31, float _m32, float _m33, float _m34,
-		float _m41, float _m42, float _m43, float _m44);
+	void setModelMat(Matrix4x4 m);
+	void setViewMat(Matrix4x4 m);
+	void setProjMat(Matrix4x4 m);
 	void setViewport(int x, int y, int w, int h);
 	void setVertexAttribs(
 		std::vector<float> const &vPos, int iPosChn,
@@ -50,7 +42,7 @@ public:
 	void setPSLightColor(Color4f c);
 	void setPSSpecularPower(int f);
 
-	void isLeftHand(bool is);
+	void isClockWise(bool b);
 
 private:
 
@@ -134,12 +126,12 @@ private:
 	};
 
 	struct PSLighting {
-		Vector3f eyePos;
-		Vector3f lightDir;
-		Color4f baseColor;
-		Color4f diffuseColor;
-		Color4f lightColor;
-		float specularPower;
+		Vector3f	eyePos;
+		Vector3f	lightDir;
+		Color4f		baseColor;
+		Color4f		diffuseColor;
+		Color4f		lightColor;
+		int			specularPower;
 	};
 
 	/* Input */
@@ -152,8 +144,8 @@ private:
 	int					iTCChn_;
 
 	/* Statistics */
-	int					iVertexCount_;
-	int					iPrimitiveCount_;
+	unsigned int		iVertexCount_;
+	unsigned int		iPrimitiveCount_;
 
 	/* Internal data */
 	Framebuffer			drawBuffer_;
@@ -169,16 +161,13 @@ private:
 	Texture2D			tex_[16];
 
 	float				zNear_;
-	float				fLeftHand_;	// left hand coordinate is default
-									// if not, need flip z in transform
-									// and winding in raster stage
-									// left: 1.0f, right: -1.0f
+	bool				bClockWise_;
 
 	/* Consts */
 	GlobalConsts		consts_;
 
 	/* PS lighting property */
-	PSLighting psLighting_;
+	PSLighting			psLighting_;
 
 	/* Stages */
 	void InputAssembler();
@@ -188,6 +177,7 @@ private:
 	void Rasterization_float(TAS2RAS tas2ras);
 	void Rasterization_integer(TAS2RAS tas2ras);
 	void PixelShader(RAS2PS ras2ps);
+	void PixelShader_phong(RAS2PS ras2ps);
 	void PixelShader_fresnel(RAS2PS ras2ps);
 	void PixelShader_cook_torrance(RAS2PS ras2ps);
 	void OutputMerger(PS2OM ps2om);

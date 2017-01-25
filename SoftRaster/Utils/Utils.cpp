@@ -3,8 +3,41 @@
 
 namespace Utils
 {
+	Matrix4x4 matrixRotationX(float rad)
+	{
+		Matrix4x4 m;
+		m.identity();
+		m.m22 = cos(rad);
+		m.m23 = sin(rad);
+		m.m32 = -sin(rad);
+		m.m33 = cos(rad);
+		return m;
+	}
+
+	Matrix4x4 matrixRotationY(float rad) 
+	{
+		Matrix4x4 m;
+		m.identity();
+		m.m11 = cos(rad);
+		m.m13 = -sin(rad);
+		m.m31 = sin(rad);
+		m.m33 = cos(rad);
+		return m;
+	}
+
+	Matrix4x4 matrixRotationZ(float rad)
+	{
+		Matrix4x4 m;
+		m.identity();
+		m.m11 = cos(rad);
+		m.m12 = sin(rad);
+		m.m21 = -sin(rad);
+		m.m22 = cos(rad);
+		return m;
+	}
+
 	/*
-	** Camera coordinate:
+	** Camera coordinate(Left-hand):
 	**
 	** +Z: lookAt - pos
 	** +X: +Z x vUp
@@ -19,18 +52,18 @@ namespace Utils
 	** 可以参考《3D游戏编程大师技巧》P427
 	*/
 	bool viewMatrix(
-		const Vector3f &pos,
+		const Vector3f &eye,
 		const Vector3f &lookAt,
 		const Vector3f &up,
 		Matrix4x4 &mat)
 	{
-		Vector3f vz(lookAt - pos); vz = vz.normalize();
+		Vector3f vz(lookAt - eye); vz = vz.normalize();
 		Vector3f vx(vz.cross(up.normalize())); vx = vx.normalize();
 		Vector3f vy(vx.cross(vz)); vy = vy.normalize();
 
 		Matrix4x4 translate;
 		translate.identity();
-		translate.m41 = -pos.x; translate.m42 = -pos.y; translate.m43 = -pos.z;
+		translate.m41 = -eye.x; translate.m42 = -eye.y; translate.m43 = -eye.z;
 
 		Matrix4x4 rot;
 		rot.identity();
@@ -57,7 +90,7 @@ namespace Utils
 		float zf,
 		Matrix4x4 &mat)
 	{
-		float cot = 1.0f / tan(thetaInDegree / 180.0f*PI);
+		float cot = 1.0f / tan(thetaInDegree / 180.0f*(float)PI);
 		mat.clear();
 		mat.m11 = cot;
 		mat.m22 = cot / aspectRatio;

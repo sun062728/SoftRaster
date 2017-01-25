@@ -13,7 +13,7 @@
 struct Vector2f
 {
 	float x, y;
-	Vector2f() :x(0.0f), y(0.0f) {}
+	Vector2f() = default;
 	Vector2f(Vector2f const &v) :x(v.x), y(v.y) {}
 	Vector2f(float _x, float _y) :x(_x), y(_y) {}
 	Vector2f& operator=(Vector2f const &rhs) 
@@ -51,7 +51,7 @@ struct Vector2f
 struct Vector3f
 {
 	float x, y, z;
-	Vector3f() :x(0.0f), y(0.0f), z(0.0f) {}
+	Vector3f() = default;
 	Vector3f(const Vector3f &v) :x(v.x), y(v.y), z(v.z)	{}
 	Vector3f(float _x, float _y, float _z) :x(_x), y(_y), z(_z)	{}
 	Vector3f& operator=(Vector3f const &rhs)
@@ -113,7 +113,7 @@ struct Vector3f
 struct Vector2i
 {
 	int x, y;
-	Vector2i() :x(0), y(0) {}
+	Vector2i() = default;
 	Vector2i(const Vector2i &v) :x(v.x), y(v.y) {}
 	Vector2i(int _x, int _y) :x(_x), y(_y) {}
 	Vector2i& operator=(Vector2i const &rhs) 
@@ -145,7 +145,7 @@ struct Vector4f
 			float r, g, b, a;
 		};
 	};
-	Vector4f() :x(0.0f), y(0.0f), z(0.0f), w(0.0f) {}
+	Vector4f() = default;
 	Vector4f(Vector4f const &v) :x(v.x), y(v.y), z(v.z), w(v.w) {}
 	Vector4f(float _x, float _y, float _z, float _w) :x(_x), y(_y), z(_z), w(_w) {}
 	Vector4f& operator=(Vector4f const &rhs) 

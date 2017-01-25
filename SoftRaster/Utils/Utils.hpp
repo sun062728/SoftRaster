@@ -6,8 +6,12 @@
 
 namespace Utils
 {
+	Matrix4x4 matrixRotationX(float rad);
+	Matrix4x4 matrixRotationY(float rad);
+	Matrix4x4 matrixRotationZ(float rad);
+
 	bool viewMatrix(
-		const Vector3f &pos,
+		const Vector3f &eye,
 		const Vector3f &lookAt,
 		const Vector3f &up,
 		Matrix4x4 &mat);
@@ -27,6 +31,6 @@ namespace Utils
 
 	inline int iRound(float f)
 	{
-		return f >= 0.0f ? f + 0.5f : f - 0.5f;
+		return f >= 0.0f ? static_cast<int>(f + 0.5f) : static_cast<int>(f - 0.5f);
 	}
 };

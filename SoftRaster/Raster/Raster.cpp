@@ -25,8 +25,43 @@ void Raster::InputAssembler()
 	IA2VS ia2vs;
 
 	if (vIndex_.empty()) {
-		const unsigned int SIZE = vPosition_.size();
+		auto it_p = vPosition_.cbegin();
+		auto it_n = vNormal_.cbegin();
+		auto it_t = vTexcoord_.cbegin();
 
+		auto fill_vtx_prop = [&](VtxProps &v)->void {
+			v.position.x = *it_p++;
+			v.position.y = *it_p++;
+			v.position.z = *it_p++;
+			v.position.w = 1.0f;
+			v.normal.x = *it_n++;
+			v.normal.y = *it_n++;
+			v.normal.z = *it_n++;
+			v.texcoord.x = *it_t++;
+			v.texcoord.y = *it_t++;
+		};
+
+		for (unsigned int idx = 0; idx < iVertexCount_ / 3; idx++) {
+			VtxProps v1;
+			fill_vtx_prop(v1);
+			VtxProps v2;
+			fill_vtx_prop(v2);
+			VtxProps v3;
+			fill_vtx_prop(v3);
+
+			if (bClockWise_) {
+				ia2vs.v1 = v1;
+				ia2vs.v2 = v2;
+				ia2vs.v3 = v3;
+			}
+			else {
+				ia2vs.v1 = v1;
+				ia2vs.v2 = v3;
+				ia2vs.v3 = v2;
+			}
+			VertexShader(ia2vs);
+		}
+		/*
 		for (unsigned int idx = 0; idx < SIZE / 3;) {
 			int offset = idx * 3, cur = offset;
 			ia2vs.v1.position.x = vPosition_[cur++];
@@ -72,6 +107,7 @@ void Raster::InputAssembler()
 
 			VertexShader(ia2vs);
 		}
+		*/
 	}
 	else {
 		int size = vIndex_.capacity(); assert(size % 3 == 0);
@@ -159,8 +195,6 @@ void Raster::VertexShader(IA2VS ia2vs)
 
 void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 {
-	TAS2RAS tas2ras;
-
 	VtxProps &v1 = vs2tas.v1;
 	VtxProps &v2 = vs2tas.v2;
 	VtxProps &v3 = vs2tas.v3;
@@ -389,14 +423,14 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 	float Dx12 = x1 - x2, Dy12 = y1 - y2, C12 = x2*y1 - y2*x1; // C12 = Dy12*x1 - Dx12*y1
 	float Dx23 = x2 - x3, Dy23 = y2 - y3, C23 = x3*y2 - y3*x2; // C23 = Dy23*x2 - Dx23*y2
 	float Dx31 = x3 - x1, Dy31 = y3 - y1, C31 = x1*y3 - y1*x3; // C31 = Dy31*x3 - Dx31*y3
-															   // for lower-left pixel
+	// for lower-left pixel
 	float PllL12 = Dx12*minY - Dy12*minX + C12, row12 = PllL12, col12;
 	float PllL23 = Dx23*minY - Dy23*minX + C23, row23 = PllL23, col23;
 	float PllL31 = Dx31*minY - Dy31*minX + C31, row31 = PllL31, col31;
 	// pX in lineYZ
 	float P3L12 = Dx12*y3 - Dy12*x3 + C12;
 	float P1L23 = Dx23*y1 - Dy23*x1 + C23;
-	//float P2L31 = Dx31*y2 - Dy31*x2 + C31;
+	///float P2L31 = Dx31*y2 - Dy31*x2 + C31; // useless, omitted
 
 	// walk through bbox
 	for (int j = iMinY; j <= iMaxY; j++) {
@@ -405,7 +439,7 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 		col31 = row31;
 		for (int i = iMinX; i <= iMaxX; i++) {
 			// clock-wise is F > 0, right side of the vector
-			if (col12*fLeftHand_ > 0 && col23*fLeftHand_ > 0 && col31*fLeftHand_ > 0) {
+			if (col12 > 0.0f && col23 > 0.0f && col31 > 0.0f) {
 				float x = (float)i + 0.5f, y = (float)j + 0.5f;
 				// Barycentric coordinate:
 				// a + b + c = 1
@@ -414,9 +448,9 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 				// a = h/h3 = |(ax+by+c)/(ax3+by3+c)|
 				float PL12 = Dx12*y - Dy12*x + C12;
 				float PL23 = Dx23*y - Dy23*x + C23;
-				float a = abs(PL12 / P3L12); // p3
-				float b = abs(PL23 / P1L23); // p1
-				float c = 1.0f - a - b; // p2
+				float a = abs(PL12 / P3L12);	// p3
+				float b = abs(PL23 / P1L23);	// p1
+				float c = 1.0f - a - b;			// p2
 
 				VtxProps &v1 = tas2ras.v1;
 				VtxProps &v2 = tas2ras.v2;
@@ -446,14 +480,14 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 					ras2ps.p.texcoord = v3.texcoord*a2 + v1.texcoord*b2 + v2.texcoord*c2;
 					ras2ps.p.posWorld = v3.posWorld*a2 + v1.posWorld*b2 + v2.posWorld*c2;
 
-					//PixelShader(ras2ps);
-					//PixelShader_fresnel(ras2ps);
+					///PixelShader(ras2ps);
+					///PixelShader_phong(ras2ps);
+					///PixelShader_fresnel(ras2ps);
 					PixelShader_cook_torrance(ras2ps);
 				}
 				else {
 					;
 				}
-				//drawBuffer_.pColorbuffer[i + j*drawBuffer_.width] = Color4f(0.0f, 1.0f, 0.0f, 1.0f);
 			}
 			col12 -= Dy12;
 			col23 -= Dy23;
@@ -465,6 +499,7 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 	}
 }
 
+// reference: http://forum.devmaster.net/t/advanced-rasterization/6145
 void Raster::Rasterization_integer(TAS2RAS tas2ras)
 {
 	const float &x1 = tas2ras.v1.position.x;
@@ -501,10 +536,10 @@ void Raster::Rasterization_integer(TAS2RAS tas2ras)
 	const int FDY31 = DY31 << 4;
 
 	// Bounding rectangle
-	int minx = (min(X1, X2, X3) + 0xF) >> 4;
-	int maxx = (max(X1, X2, X3) + 0xF) >> 4;
-	int miny = (min(Y1, Y2, Y3) + 0xF) >> 4;
-	int maxy = (max(Y1, Y2, Y3) + 0xF) >> 4;
+	int minx = (min(min(X1, X2), X3) + 0xF) >> 4; minx = max(minx, viewport_.x);
+	int maxx = (max(max(X1, X2), X3) + 0xF) >> 4; maxx = min(maxx, viewport_.x + viewport_.w - 1);
+	int miny = (min(min(Y1, Y2), Y3) + 0xF) >> 4; miny = max(miny, viewport_.y);
+	int maxy = (max(max(Y1, Y2), Y3) + 0xF) >> 4; maxy = min(maxy, viewport_.y + viewport_.h - 1);
 
 	///(char*&)colorBuffer += miny * stride;
 
@@ -514,9 +549,9 @@ void Raster::Rasterization_integer(TAS2RAS tas2ras)
 	int C3 = DY31 * X3 - DX31 * Y3;
 
 	// Correct for fill convention
-	if (DY12 < 0 || (DY12 == 0 && DX12 > 0)) C1++;
-	if (DY23 < 0 || (DY23 == 0 && DX23 > 0)) C2++;
-	if (DY31 < 0 || (DY31 == 0 && DX31 > 0)) C3++;
+	if (DY12 > 0 || (DY12 == 0 && DX12 < 0)) C1--;
+	if (DY23 > 0 || (DY23 == 0 && DX23 < 0)) C2--;
+	if (DY31 > 0 || (DY31 == 0 && DX31 < 0)) C3--;
 
 	int CY1 = C1 + DX12 * (miny << 4) - DY12 * (minx << 4);
 	int CY2 = C2 + DX23 * (miny << 4) - DY23 * (minx << 4);
@@ -530,7 +565,7 @@ void Raster::Rasterization_integer(TAS2RAS tas2ras)
 
 		for (int x = minx; x < maxx; x++)
 		{
-			if (CX1 > 0 && CX2 > 0 && CX3 > 0)
+			if (CX1 < 0 && CX2 < 0 && CX3 < 0)	// clock-wise
 			{
 				///colorBuffer[x] = 0x00FFFFFF;
 				drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = Color4f(0.0f, 1.0f, 0.0f, 1.0f);
@@ -549,7 +584,14 @@ void Raster::Rasterization_integer(TAS2RAS tas2ras)
 	}
 }
 
-void Raster::PixelShader(RAS2PS ras2ps)
+void Raster::PixelShader(RAS2PS ras2ps) 
+{
+	int x = ras2ps.p.coord.x;
+	int y = ras2ps.p.coord.y;
+	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = Color4f(0.0f, 1.0f, 0.0f, 1.0f);
+}
+
+void Raster::PixelShader_phong(RAS2PS ras2ps)
 {
 	int x = ras2ps.p.coord.x;
 	int y = ras2ps.p.coord.y;
@@ -581,10 +623,6 @@ void Raster::PixelShader(RAS2PS ras2ps)
 
 	// OM
 	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = color;
-
-	//char str[64];
-	//sprintf_s(str, 64, "x:%d y:%d\n", x, y);
-	//OutputDebugString(str);
 }
 
 void Raster::PixelShader_fresnel(RAS2PS ras2ps)
@@ -624,10 +662,6 @@ void Raster::PixelShader_fresnel(RAS2PS ras2ps)
 
 	// OM
 	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = color;
-
-	//char str[64];
-	//sprintf_s(str, 64, "x:%d y:%d\n", x, y);
-	//OutputDebugString(str);
 }
 
 void Raster::PixelShader_cook_torrance(RAS2PS ras2ps) 
@@ -690,10 +724,6 @@ void Raster::PixelShader_cook_torrance(RAS2PS ras2ps)
 
 	// OM
 	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = color;
-
-	//char str[64];
-	//sprintf_s(str, 64, "x:%d y:%d\n", x, y);
-	//OutputDebugString(str);
 }
 
 
@@ -729,11 +759,6 @@ void Raster::draw()
 
 void Raster::initStatesAndInternalConstants()
 {
-	// setup coordinate system
-	Matrix4x4 mTrans;
-	mTrans.identity();
-	mTrans.m33 = fLeftHand_;
-	mWorld_ = mWorld_*mTrans;
 	// setup matrices
 	mWVP_ = mWorld_*mView_*mProj_;
 	Matrix4x4 mat4x4_worldView = mWorld_*mView_;
@@ -771,45 +796,18 @@ void Raster::setViewport(int x, int y, int w, int h)
 	}
 }
 
-void Raster::setModelMat(
-	float _m11, float _m12, float _m13, float _m14,
-	float _m21, float _m22, float _m23, float _m24,
-	float _m31, float _m32, float _m33, float _m34,
-	float _m41, float _m42, float _m43, float _m44)
+void Raster::setModelMat(Matrix4x4 m)
 {
-	Matrix4x4 m(
-		_m11, _m12, _m13, _m14,
-		_m21, _m22, _m23, _m24,
-		_m31, _m32, _m33, _m34,
-		_m41, _m42, _m43, _m44);
 	mWorld_ = m;
 }
 
-void Raster::setViewMat(
-	float _m11, float _m12, float _m13, float _m14,
-	float _m21, float _m22, float _m23, float _m24,
-	float _m31, float _m32, float _m33, float _m34,
-	float _m41, float _m42, float _m43, float _m44)
+void Raster::setViewMat(Matrix4x4 m)
 {
-	Matrix4x4 m(
-		_m11, _m12, _m13, _m14,
-		_m21, _m22, _m23, _m24,
-		_m31, _m32, _m33, _m34,
-		_m41, _m42, _m43, _m44);
 	mView_ = m;
 }
 
-void Raster::setProjMat(
-	float _m11, float _m12, float _m13, float _m14,
-	float _m21, float _m22, float _m23, float _m24,
-	float _m31, float _m32, float _m33, float _m34,
-	float _m41, float _m42, float _m43, float _m44)
+void Raster::setProjMat(Matrix4x4 m)
 {
-	Matrix4x4 m(
-		_m11, _m12, _m13, _m14,
-		_m21, _m22, _m23, _m24,
-		_m31, _m32, _m33, _m34,
-		_m41, _m42, _m43, _m44);
 	mProj_ = m;
 }
 
@@ -824,7 +822,11 @@ void Raster::setVertexAttribs(
 	vTexcoord_ = vTC;	iTCChn_ = iTCChn;
 	vIndex_ = vIdx;
 
-	assert(false == vPos.empty());
+	if (iPosChn != 3) assert(0);
+	if (!(iNormChn != 3 || iNormChn != 0)) assert(0);
+	if (!(iTCChn != 2 || iTCChn != 0)) assert(0);
+
+	assert(!vPos.empty());
 	iVertexCount_ = vPos.size() / 3;
 
 	assert(vIdx.size() % 3 == 0);
@@ -835,7 +837,8 @@ void Raster::setVertexAttribs(
 
 	// fill empty vectors
 	if (vNorm.empty()) {
-		for (int i = 0; i < iVertexCount_; i++) {
+		vNormal_.reserve(iVertexCount_ * 3);
+		for (unsigned int i = 0; i < iVertexCount_; i++) {
 			vNormal_.push_back(0.0f);
 			vNormal_.push_back(0.0f);
 			vNormal_.push_back(0.0f);
@@ -843,7 +846,8 @@ void Raster::setVertexAttribs(
 	}
 
 	if (vTC.empty()) {
-		for (int i = 0; i < iVertexCount_; i++) {
+		vTexcoord_.reserve(iVertexCount_ * 2);
+		for (unsigned int i = 0; i < iVertexCount_; i++) {
 			vTexcoord_.push_back(0.0f);
 			vTexcoord_.push_back(0.0f);
 		}
@@ -870,6 +874,13 @@ void Raster::dumpRT2BMP(const char *path)
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 			// BGR for RGB
+			if (x == 0 && y == 354) {
+				char str[255];
+				sprintf_s(str, 255, "r: %f, g: %f, b: %f\n",
+					drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].r*255.0f,
+					drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].g*255.0f,
+					drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].b*255.0f);
+			}
 			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].b*255.0f);
 			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].g*255.0f);
 			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].r*255.0f);
@@ -944,7 +955,7 @@ void Raster::setPSSpecularPower(int f)
 	psLighting_.specularPower = f;
 }
 
-void Raster::isLeftHand(bool b)
+void Raster::isClockWise(bool b)
 {
-	b ? fLeftHand_ = 1.0f : fLeftHand_ = -1.0f;
+	bClockWise_ = b;
 }
