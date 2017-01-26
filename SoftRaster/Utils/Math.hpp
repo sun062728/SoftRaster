@@ -4,7 +4,7 @@
 #include "Matrix.hpp"
 #include "Vector.hpp"
 
-namespace Utils
+namespace Math
 {
 	Matrix4x4 matrixRotationX(float rad);
 	Matrix4x4 matrixRotationY(float rad);

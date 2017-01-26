@@ -7,7 +7,7 @@
 class ObjLoader
 {
 public:
-	ObjLoader(std::string filePath);
+	ObjLoader(std::string const &filePath);
 	int getObjectNum() const
 	{
 		return vObject_.size();

@@ -33,7 +33,13 @@
     <ClInclude Include="Utils\ObjLoader.hpp">
       <Filter>Utils\inc</Filter>
     </ClInclude>
-    <ClInclude Include="Utils\Utils.hpp">
+    <ClInclude Include="Utils\Math.hpp">
+      <Filter>Utils\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Raster\Texture.hpp">
+      <Filter>Raster\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\BMPLoader.hpp">
       <Filter>Utils\inc</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,7 +57,13 @@
     <ClCompile Include="Utils\ObjLoader.cpp">
       <Filter>Utils\src</Filter>
     </ClCompile>
-    <ClCompile Include="Utils\Utils.cpp">
+    <ClCompile Include="Utils\Math.cpp">
+      <Filter>Utils\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Raster\Texture.cpp">
+      <Filter>Raster\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\BMPLoader.cpp">
       <Filter>Utils\src</Filter>
     </ClCompile>
   </ItemGroup>

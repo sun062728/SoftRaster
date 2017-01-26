@@ -36,7 +36,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -120,6 +120,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,17 +149,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Raster\Raster.hpp" />
+    <ClInclude Include="Raster\Texture.hpp" />
+    <ClInclude Include="Utils\BMPLoader.hpp" />
     <ClInclude Include="Utils\Matrix.hpp" />
     <ClInclude Include="Utils\ObjLoader.hpp" />
-    <ClInclude Include="Utils\Utils.hpp" />
+    <ClInclude Include="Utils\Math.hpp" />
     <ClInclude Include="Utils\Vector.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Raster\Raster.cpp" />
+    <ClCompile Include="Raster\Texture.cpp" />
+    <ClCompile Include="Utils\BMPLoader.cpp" />
     <ClCompile Include="Utils\Matrix.cpp" />
     <ClCompile Include="Utils\ObjLoader.cpp" />
-    <ClCompile Include="Utils\Utils.cpp" />
+    <ClCompile Include="Utils\Math.cpp" />
     <ClCompile Include="Utils\Vector.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

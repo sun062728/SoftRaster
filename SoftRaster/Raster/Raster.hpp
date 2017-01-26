@@ -1,11 +1,16 @@
 #pragma once
 
-#include <windows.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>	// just for bmp header
+
 #include <vector>
 #include <cassert>
 
 #include "../Utils/Matrix.hpp"
 #include "../Utils/Vector.hpp"
+
+#include "Texture.hpp"
 
 /*
 ** Left-hand coordinate system
@@ -29,7 +34,7 @@ public:
 		std::vector<float> const &vNorm, int iNormChn,
 		std::vector<float> const &vTC, int iTCChn,
 		std::vector<int> const &vIdx);
-	void setTexture(std::vector<float> const &tex, int iTexChn, int w, int h, int idx);
+	void setTexture(std::vector<int> const &tex, int iTexChn, int w, int h, int idx);
 	void clearColor(float r, float g, float b, float a);
 	void clearDepthf(float d);
 	void draw();
@@ -110,14 +115,6 @@ private:
 		Framebuffer() :width(0), height(0) {	}
 	};
 
-	struct Texture2D
-	{
-		std::vector<float>	texData;
-		int					idx;
-		int					width;
-		int					height;
-	};
-
 	struct GlobalConsts
 	{
 		/* Viewport */
@@ -149,6 +146,7 @@ private:
 
 	/* Internal data */
 	Framebuffer			drawBuffer_;
+	Texture2D			textures_[8];
 
 	/* States */
 	Matrix4x4			mWorld_;
@@ -205,21 +203,6 @@ private:
 		vC.posWorld.y = oneMinusAlpha*v1.posWorld.y + alpha*v2.posWorld.y;
 		vC.posWorld.z = oneMinusAlpha*v1.posWorld.z + alpha*v2.posWorld.z;
 		vC.posWorld.w = 1.0f;
-	}
-
-	// nearest sampler
-	inline Color4f tex2D(const Vector2f &v, int i/* Tex idx*/) 
-	{
-		Texture2D &tex = tex_[i];
-		if (tex.texData.size() == 0)
-			return Color4f(1.0f, 0.0f, 1.0f, 1.0f);
-
-		Vector2f frac(v.x - floor(v.x), v.y - floor(v.y));
-		Vector2i pos((int)floor(frac.x*tex_[i].width), (int)floor(frac.y*tex_[i].height));
-		int offset = (pos.x + pos.y*tex.height)*tex.idx;
-		// default RGBA
-		Color4f color(tex.texData[offset], tex.texData[offset + 1], tex.texData[offset + 2], tex.texData[offset + 3]);
-		return color;
 	}
 
 	inline float clamp(float f, float min, float max) const

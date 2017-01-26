@@ -167,6 +167,11 @@ struct Vector4f
 		Vector4f v(x*f, y*f, z*f, w*f);
 		return v;
 	}
+	Vector4f operator/(float f)const
+	{
+		float inv = 1.0f / f;
+		return *this*inv;
+	}
 	Vector4f operator+=(Vector4f const &rhs)
 	{
 		x += rhs.x;	y += rhs.y; z += rhs.z; w += rhs.w;

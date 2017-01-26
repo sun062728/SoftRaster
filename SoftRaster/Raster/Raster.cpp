@@ -1,5 +1,5 @@
 #include "Raster.hpp"
-#include "../Utils/Utils.hpp"
+#include "../Utils/Math.hpp"
 
 #include <fstream>
 
@@ -29,16 +29,10 @@ void Raster::InputAssembler()
 		auto it_n = vNormal_.cbegin();
 		auto it_t = vTexcoord_.cbegin();
 
-		auto fill_vtx_prop = [&](VtxProps &v)->void {
-			v.position.x = *it_p++;
-			v.position.y = *it_p++;
-			v.position.z = *it_p++;
-			v.position.w = 1.0f;
-			v.normal.x = *it_n++;
-			v.normal.y = *it_n++;
-			v.normal.z = *it_n++;
-			v.texcoord.x = *it_t++;
-			v.texcoord.y = *it_t++;
+		auto fill_vtx_prop = [&](VtxProps &v) {
+			v.position.x = *it_p++;	v.position.y = *it_p++;	v.position.z = *it_p++;	v.position.w = 1.0f;
+			v.normal.x = *it_n++;	v.normal.y = *it_n++;	v.normal.z = *it_n++;
+			v.texcoord.x = *it_t++;	v.texcoord.y = *it_t++;
 		};
 
 		for (unsigned int idx = 0; idx < iVertexCount_ / 3; idx++) {
@@ -61,53 +55,6 @@ void Raster::InputAssembler()
 			}
 			VertexShader(ia2vs);
 		}
-		/*
-		for (unsigned int idx = 0; idx < SIZE / 3;) {
-			int offset = idx * 3, cur = offset;
-			ia2vs.v1.position.x = vPosition_[cur++];
-			ia2vs.v1.position.y = vPosition_[cur++];
-			ia2vs.v1.position.z = vPosition_[cur];
-			ia2vs.v1.position.w = 1.0f;
-			offset = idx * 3, cur = offset;
-			ia2vs.v1.normal.x = vNormal_[cur++];
-			ia2vs.v1.normal.y = vNormal_[cur++];
-			ia2vs.v1.normal.z = vNormal_[cur];
-			offset = idx * 2, cur = offset;
-			ia2vs.v1.texcoord.x = vTexcoord_[cur++];
-			ia2vs.v1.texcoord.y = vTexcoord_[cur];
-			idx++;
-
-			offset = idx * 3; cur = offset;
-			ia2vs.v2.position.x = vPosition_[cur++];
-			ia2vs.v2.position.y = vPosition_[cur++];
-			ia2vs.v2.position.z = vPosition_[cur];
-			ia2vs.v2.position.w = 1.0f;
-			offset = idx * 3; cur = offset;
-			ia2vs.v2.normal.x = vNormal_[cur++];
-			ia2vs.v2.normal.y = vNormal_[cur++];
-			ia2vs.v2.normal.z = vNormal_[cur];
-			offset = idx * 2; cur = offset;
-			ia2vs.v2.texcoord.x = vTexcoord_[cur++];
-			ia2vs.v2.texcoord.y = vTexcoord_[cur];
-			idx++;
-
-			offset = idx * 3; cur = offset;
-			ia2vs.v3.position.x = vPosition_[cur++];
-			ia2vs.v3.position.y = vPosition_[cur++];
-			ia2vs.v3.position.z = vPosition_[cur];
-			ia2vs.v3.position.w = 1.0f;
-			offset = idx * 3; cur = offset;
-			ia2vs.v3.normal.x = vNormal_[cur++];
-			ia2vs.v3.normal.y = vNormal_[cur++];
-			ia2vs.v3.normal.z = vNormal_[cur];
-			offset = idx * 2; cur = offset;
-			ia2vs.v3.texcoord.x = vTexcoord_[cur++];
-			ia2vs.v3.texcoord.y = vTexcoord_[cur];
-			idx++;
-
-			VertexShader(ia2vs);
-		}
-		*/
 	}
 	else {
 		int size = vIndex_.capacity(); assert(size % 3 == 0);
@@ -480,10 +427,10 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 					ras2ps.p.texcoord = v3.texcoord*a2 + v1.texcoord*b2 + v2.texcoord*c2;
 					ras2ps.p.posWorld = v3.posWorld*a2 + v1.posWorld*b2 + v2.posWorld*c2;
 
-					///PixelShader(ras2ps);
+					PixelShader(ras2ps);
 					///PixelShader_phong(ras2ps);
 					///PixelShader_fresnel(ras2ps);
-					PixelShader_cook_torrance(ras2ps);
+					///PixelShader_cook_torrance(ras2ps);
 				}
 				else {
 					;
@@ -510,12 +457,12 @@ void Raster::Rasterization_integer(TAS2RAS tas2ras)
 	const float &y3 = tas2ras.v3.position.y;
 
 	// 28.4 fixed-point coordinates
-	int X1 = Utils::iRound(16.0f * tas2ras.v1.position.x);
-	int Y1 = Utils::iRound(16.0f * tas2ras.v1.position.y);
-	int X2 = Utils::iRound(16.0f * tas2ras.v2.position.x);
-	int Y2 = Utils::iRound(16.0f * tas2ras.v2.position.y);
-	int X3 = Utils::iRound(16.0f * tas2ras.v3.position.x);
-	int Y3 = Utils::iRound(16.0f * tas2ras.v3.position.y);
+	int X1 = Math::iRound(16.0f * tas2ras.v1.position.x);
+	int Y1 = Math::iRound(16.0f * tas2ras.v1.position.y);
+	int X2 = Math::iRound(16.0f * tas2ras.v2.position.x);
+	int Y2 = Math::iRound(16.0f * tas2ras.v2.position.y);
+	int X3 = Math::iRound(16.0f * tas2ras.v3.position.x);
+	int Y3 = Math::iRound(16.0f * tas2ras.v3.position.y);
 
 	// Deltas
 	const int DX12 = X1 - X2;
@@ -588,7 +535,9 @@ void Raster::PixelShader(RAS2PS ras2ps)
 {
 	int x = ras2ps.p.coord.x;
 	int y = ras2ps.p.coord.y;
-	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = Color4f(0.0f, 1.0f, 0.0f, 1.0f);
+	Color4f tex_color = textures_[0].sample(Sampler2D(FM_NEAREST), ras2ps.p.texcoord);
+	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = tex_color;
+	///drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = Color4f(0.0f, 1.0f, 0.0f, 1.0f);
 }
 
 void Raster::PixelShader_phong(RAS2PS ras2ps)
@@ -854,12 +803,9 @@ void Raster::setVertexAttribs(
 	}
 }
 
-void Raster::setTexture(std::vector<float> const &tex, int iTexChn, int w, int h, int idx)
+void Raster::setTexture(std::vector<int> const &tex, int iTexChn, int w, int h, int idx)
 {
-	tex_[idx].texData = tex;
-	tex_[idx].idx = iTexChn;
-	tex_[idx].width = w;
-	tex_[idx].height = h;
+	textures_[idx].setTexture(w, h, Texture2D::TF_RGBA32F, Texture2D::TF_RGB888, (void*)tex.data());
 }
 
 void Raster::dumpRT2BMP(const char *path)
@@ -873,14 +819,7 @@ void Raster::dumpRT2BMP(const char *path)
 	char *p = color;
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
-			// BGR for RGB
-			if (x == 0 && y == 354) {
-				char str[255];
-				sprintf_s(str, 255, "r: %f, g: %f, b: %f\n",
-					drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].r*255.0f,
-					drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].g*255.0f,
-					drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].b*255.0f);
-			}
+			// reverse
 			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].b*255.0f);
 			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].g*255.0f);
 			*p++ = static_cast<char>(drawBuffer_.pColorbuffer[x + y*drawBuffer_.width].r*255.0f);
@@ -919,9 +858,7 @@ void Raster::dumpRT2BMP(const char *path)
 	bmpOutput.write(reinterpret_cast<char*>(&bmpFileHeader), sizeof(BITMAPFILEHEADER));
 	bmpOutput.write(reinterpret_cast<char*>(&bmpInfoHeader), sizeof(BITMAPINFOHEADER));
 	bmpOutput.write(color, width * height * pitchInBytes);
-
 	bmpOutput.close();
-
 	return;
 }
 

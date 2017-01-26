@@ -2,14 +2,28 @@
 #include "Utils\ObjLoader.hpp"
 #include "Utils\Matrix.hpp"
 #include "Utils\Vector.hpp"
-#include "Utils\Utils.hpp"
+#include "Utils\Math.hpp"
 
+#include <fstream>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+void test()
+{
+	float x = -12.3f;
+	int ix = (int)x;
+	x = 12.3f;
+	ix = (int)x;
+	x = 12.8f;
+	ix = (int)x;
+}
 
 int main()
 {
+	test();
 	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\triangle.obj");
-	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\cube.obj");
-	ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\bunny.obj");
+	ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\cube.obj");
+	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\bunny.obj");
 	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\mesh\\Aventador\\Avent_tri.mtl.obj");
 	std::vector<float> vPos, vNorm, vTC;
 	int iPosChn, iNormChn, iTCChn;
@@ -22,7 +36,7 @@ int main()
 	/************ client code ************/
 	// set transform
 	// world
-	Matrix4x4 mWorld = Utils::matrixRotationY(0.0f); // (float)PI*0.25f
+	Matrix4x4 mWorld = Math::matrixRotationY((float)PI*0.25f); // (float)PI*0.25f
 	if (!isClockWise) {
 		Matrix4x4 trans;
 		trans.identity();
@@ -35,12 +49,12 @@ int main()
 	Vector3f lookAt(0.0f, 1.0f, 0.0f);
 	Vector3f up(0.0f, 1.0f, 0.0f);
 	Matrix4x4 mView;
-	Utils::viewMatrix(eye, lookAt, up, mView);
+	Math::viewMatrix(eye, lookAt, up, mView);
 	raster.setViewMat(mView);
 	// projection
 	Matrix4x4 mProj;
 	///Utils::perspectiveProjMatrix(THETA, (float)(WIDTH/HEIGHT), 1.0f, 1000.0f, mProj);
-	Utils::orthoProjMatrix(-3.0f, 3.0f, -3.0f, 3.0f, 0.0f, 5.0f, mProj);
+	Math::orthoProjMatrix(-3.0f, 3.0f, -3.0f, 3.0f, 0.0f, 5.0f, mProj);
 	raster.setProjMat(mProj);
 	raster.setViewport(0, 0, WIDTH, HEIGHT);
 	// set color & depth buffer
@@ -55,6 +69,13 @@ int main()
 	raster.setPSSpecularPower(25);
 	// set winding rule
 	raster.isClockWise(isClockWise);
+	// set textures
+	std::vector<int> vTex;
+	vTex.push_back(0); vTex.push_back(0); vTex.push_back(0);
+	vTex.push_back(255); vTex.push_back(255); vTex.push_back(255);
+	vTex.push_back(255); vTex.push_back(255); vTex.push_back(255);
+	vTex.push_back(0); vTex.push_back(0); vTex.push_back(0);
+	raster.setTexture(vTex, 3, 2, 2, 0);
 	// set vb, draw
 	unsigned int maxObjNum = objLoader.getObjectNum();
 	for (unsigned int iObj = 0; iObj < maxObjNum; iObj++) {
@@ -68,13 +89,6 @@ int main()
 
 			raster.setVertexAttribs(vPos, 3, vNorm, 0, vTC, 0, vIdx);
 
-			//std::vector<float> vTex;
-			//vTex.push_back(0.0f); vTex.push_back(0.0f); vTex.push_back(0.0f); vTex.push_back(1.0f);
-			//vTex.push_back(1.0f); vTex.push_back(1.0f); vTex.push_back(1.0f); vTex.push_back(1.0f);
-			//vTex.push_back(1.0f); vTex.push_back(1.0f); vTex.push_back(1.0f); vTex.push_back(1.0f);
-			//vTex.push_back(0.0f); vTex.push_back(0.0f); vTex.push_back(0.0f); vTex.push_back(1.0f);
-
-			//raster.setTexture(vTex, 4, 2, 2, 0);
 			char str[64];
 			sprintf_s(str, 64, "Obj %d, Grp %d\n", iObj, iGrp);
 			OutputDebugString(str);

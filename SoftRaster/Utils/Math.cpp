@@ -1,7 +1,7 @@
-#include "Utils.hpp"
+#include "Math.hpp"
 #include <cmath>
 
-namespace Utils
+namespace Math
 {
 	Matrix4x4 matrixRotationX(float rad)
 	{

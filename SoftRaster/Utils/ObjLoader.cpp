@@ -1,6 +1,6 @@
 #include "ObjLoader.hpp"
 
-ObjLoader::ObjLoader(std::string filePath) 
+ObjLoader::ObjLoader(std::string const &filePath) 
 {
 	std::fstream obj(filePath, std::ios::in);
 	if (!obj) {
