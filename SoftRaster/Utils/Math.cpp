@@ -52,9 +52,9 @@ namespace Math
 	** 可以参考《3D游戏编程大师技巧》P427
 	*/
 	bool viewMatrix(
-		const Vector3f &eye,
-		const Vector3f &lookAt,
-		const Vector3f &up,
+		Vector3f const &eye,
+		Vector3f const &lookAt,
+		Vector3f const &up,
 		Matrix4x4 &mat)
 	{
 		Vector3f vz(lookAt - eye); vz = vz.normalize();

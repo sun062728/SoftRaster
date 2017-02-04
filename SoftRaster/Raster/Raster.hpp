@@ -25,16 +25,16 @@ public:
 		delete[] drawBuffer_.pColorbuffer;
 		delete[] drawBuffer_.pDepthbuffer;
 	}
-	void setModelMat(Matrix4x4 m);
-	void setViewMat(Matrix4x4 m);
-	void setProjMat(Matrix4x4 m);
+	void setWorldMatrix(Matrix4x4 m);
+	void setViewMatrix(Matrix4x4 m);
+	void setProjMatrix(Matrix4x4 m);
 	void setViewport(int x, int y, int w, int h);
 	void setVertexAttribs(
 		std::vector<float> const &vPos, int iPosChn,
 		std::vector<float> const &vNorm, int iNormChn,
 		std::vector<float> const &vTC, int iTCChn,
 		std::vector<int> const &vIdx);
-	void setTexture(std::vector<int> const &tex, int iTexChn, int w, int h, int idx);
+	void setTexture(int idx, unsigned int w, unsigned int h, Texture2D::TexFmt internalFormat, Texture2D::TexFmt dataFormat, void *pData);
 	void clearColor(float r, float g, float b, float a);
 	void clearDepthf(float d);
 	void draw();

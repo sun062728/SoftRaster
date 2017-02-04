@@ -2,7 +2,7 @@
 
 ObjLoader::ObjLoader(std::string const &filePath) 
 {
-	std::fstream obj(filePath, std::ios::in);
+	std::fstream obj(filePath, std::fstream::in);
 	if (!obj) {
 		assert(0);
 		return;

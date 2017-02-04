@@ -427,10 +427,10 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 					ras2ps.p.texcoord = v3.texcoord*a2 + v1.texcoord*b2 + v2.texcoord*c2;
 					ras2ps.p.posWorld = v3.posWorld*a2 + v1.posWorld*b2 + v2.posWorld*c2;
 
-					PixelShader(ras2ps);
+					///PixelShader(ras2ps);
 					///PixelShader_phong(ras2ps);
 					///PixelShader_fresnel(ras2ps);
-					///PixelShader_cook_torrance(ras2ps);
+					PixelShader_cook_torrance(ras2ps);
 				}
 				else {
 					;
@@ -536,6 +536,10 @@ void Raster::PixelShader(RAS2PS ras2ps)
 	int x = ras2ps.p.coord.x;
 	int y = ras2ps.p.coord.y;
 	Color4f tex_color = textures_[0].sample(Sampler2D(FM_NEAREST), ras2ps.p.texcoord);
+	//tex_color.r = clamp(tex_color.r, 0.0f, 1.0f);
+	//tex_color.g = clamp(tex_color.g, 0.0f, 1.0f);
+	//tex_color.b = clamp(tex_color.b, 0.0f, 1.0f);
+	//tex_color.a = clamp(tex_color.a, 0.0f, 1.0f);
 	drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = tex_color;
 	///drawBuffer_.pColorbuffer[x + y*drawBuffer_.width] = Color4f(0.0f, 1.0f, 0.0f, 1.0f);
 }
@@ -550,8 +554,8 @@ void Raster::PixelShader_phong(RAS2PS ras2ps)
 	Vector3f minusLightDir = -lightDir;
 	Color4f diffuse;
 	Color4f lightColor(1.0f, 1.0f, 1.0f, 1.0f);
-	static const float K = 0.3f;
-	static const int SPEC = 20;
+	static constexpr float K = 0.3f;
+	static constexpr int SPEC = 20;
 	//diffuse = tex2D(texCoord, 0);
 	diffuse = Color4f(0.0f, 0.1f, 0.3f, 1.0f);
 
@@ -745,17 +749,17 @@ void Raster::setViewport(int x, int y, int w, int h)
 	}
 }
 
-void Raster::setModelMat(Matrix4x4 m)
+void Raster::setWorldMatrix(Matrix4x4 m)
 {
 	mWorld_ = m;
 }
 
-void Raster::setViewMat(Matrix4x4 m)
+void Raster::setViewMatrix(Matrix4x4 m)
 {
 	mView_ = m;
 }
 
-void Raster::setProjMat(Matrix4x4 m)
+void Raster::setProjMatrix(Matrix4x4 m)
 {
 	mProj_ = m;
 }
@@ -803,9 +807,9 @@ void Raster::setVertexAttribs(
 	}
 }
 
-void Raster::setTexture(std::vector<int> const &tex, int iTexChn, int w, int h, int idx)
+void Raster::setTexture(int idx, unsigned int w, unsigned int h, Texture2D::TexFmt internalFormat, Texture2D::TexFmt dataFormat, void *pData)
 {
-	textures_[idx].setTexture(w, h, Texture2D::TF_RGBA32F, Texture2D::TF_RGB888, (void*)tex.data());
+	textures_[idx].setTexture(w, h, Texture2D::TF_RGBA32F, Texture2D::TF_RGB888, pData);
 }
 
 void Raster::dumpRT2BMP(const char *path)
@@ -827,7 +831,7 @@ void Raster::dumpRT2BMP(const char *path)
 	}
 
 	// bmp header
-	std::fstream bmpOutput(path, std::ios::out | std::ios::binary);
+	std::fstream bmpOutput(path, std::fstream::out | std::fstream::binary);
 	if (true == bmpOutput.fail()) {
 		OutputDebugString("Open output file failed!\n");
 		return;

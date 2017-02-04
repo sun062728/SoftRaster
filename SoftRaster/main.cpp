@@ -3,28 +3,21 @@
 #include "Utils\Matrix.hpp"
 #include "Utils\Vector.hpp"
 #include "Utils\Math.hpp"
+#include "Utils\BMPLoader.hpp"
 
+#include <sstream>
 #include <fstream>
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-void test()
-{
-	float x = -12.3f;
-	int ix = (int)x;
-	x = 12.3f;
-	ix = (int)x;
-	x = 12.8f;
-	ix = (int)x;
-}
+#include <string>
+#include <istream>
 
 int main()
 {
-	test();
-	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\triangle.obj");
-	ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\cube.obj");
-	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\bunny.obj");
+	///ObjLoader objLoader("./Resource/Mesh/triangle.obj");
+	///ObjLoader objLoader("./Resource/Mesh/cube.obj");
+	ObjLoader objLoader("./Resource/Mesh/bunny.obj");
 	///ObjLoader objLoader("C:\\Users\\sun06\\Desktop\\Raster\\mesh\\Aventador\\Avent_tri.mtl.obj");
+	bool isClockWise = false; // isClockWise: is left-hand coordinate system
+
 	std::vector<float> vPos, vNorm, vTC;
 	int iPosChn, iNormChn, iTCChn;
 	std::vector<int> vIdx;
@@ -32,30 +25,29 @@ int main()
 	constexpr int HEIGHT = 1024;
 	constexpr float THETA = 60.0f;
 	Raster raster;
-	bool isClockWise = false;
 	/************ client code ************/
 	// set transform
 	// world
-	Matrix4x4 mWorld = Math::matrixRotationY((float)PI*0.25f); // (float)PI*0.25f
+	Matrix4x4 mWorld = Math::matrixRotationY(0.0f); // (float)PI*0.25f
 	if (!isClockWise) {
-		Matrix4x4 trans;
-		trans.identity();
-		trans.m33 = -1.0f;
-		mWorld = trans*mWorld;
+		Matrix4x4 mFlipZ;
+		mFlipZ.identity();
+		mFlipZ.m33 = -1.0f;
+		mWorld = mFlipZ*mWorld;
 	}
-	raster.setModelMat(mWorld);
+	raster.setWorldMatrix(mWorld);
 	// view
 	Vector3f eye(0.0f, 2.0f, -2.0f);
 	Vector3f lookAt(0.0f, 1.0f, 0.0f);
 	Vector3f up(0.0f, 1.0f, 0.0f);
 	Matrix4x4 mView;
 	Math::viewMatrix(eye, lookAt, up, mView);
-	raster.setViewMat(mView);
+	raster.setViewMatrix(mView);
 	// projection
 	Matrix4x4 mProj;
-	///Utils::perspectiveProjMatrix(THETA, (float)(WIDTH/HEIGHT), 1.0f, 1000.0f, mProj);
+	///Math::perspectiveProjMatrix(THETA, (float)(WIDTH/HEIGHT), 1.0f, 1000.0f, mProj);
 	Math::orthoProjMatrix(-3.0f, 3.0f, -3.0f, 3.0f, 0.0f, 5.0f, mProj);
-	raster.setProjMat(mProj);
+	raster.setProjMatrix(mProj);
 	raster.setViewport(0, 0, WIDTH, HEIGHT);
 	// set color & depth buffer
 	raster.clearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -75,7 +67,9 @@ int main()
 	vTex.push_back(255); vTex.push_back(255); vTex.push_back(255);
 	vTex.push_back(255); vTex.push_back(255); vTex.push_back(255);
 	vTex.push_back(0); vTex.push_back(0); vTex.push_back(0);
-	raster.setTexture(vTex, 3, 2, 2, 0);
+	raster.setTexture(0, 2, 2, Texture2D::TF_RGBA32F, Texture2D::TF_RGB888, (void*)vTex.data());
+	//BMPLoader texLoader("./Resource/Texture/Bitmap2Material_Pebbles.bmp");
+	//raster.setTexture(0, texLoader.getWidth(), texLoader.getHeight(), Texture2D::TF_RGBA32F, Texture2D::TF_RGB888, texLoader.getData());
 	// set vb, draw
 	unsigned int maxObjNum = objLoader.getObjectNum();
 	for (unsigned int iObj = 0; iObj < maxObjNum; iObj++) {
@@ -88,15 +82,11 @@ int main()
 				assert(0);
 
 			raster.setVertexAttribs(vPos, 3, vNorm, 0, vTC, 0, vIdx);
-
-			char str[64];
-			sprintf_s(str, 64, "Obj %d, Grp %d\n", iObj, iGrp);
-			OutputDebugString(str);
 			raster.draw();
 		}
 	}
 	// dump raster result
-	raster.dumpRT2BMP("C:\\Users\\sun06\\Desktop\\Raster\\Output.bmp");
+	raster.dumpRT2BMP("./Output/Output.bmp");
 
 	return 0;
 }
