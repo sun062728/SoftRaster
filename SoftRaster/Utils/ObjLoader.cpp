@@ -7,6 +7,7 @@ ObjLoader::ObjLoader(std::string const &filePath)
 		assert(0);
 		return;
 	}
+	path_.assign(filePath, 0, filePath.rfind('/') + 1);
 	parse(obj);
 }
 
@@ -51,6 +52,7 @@ void ObjLoader::parse(std::fstream &obj)
 			break;
 		case 'f':
 		{
+			/*
 			char buf[MAX_LINE_SIZE];
 			char *p;
 			int i = 0, length = 0;
@@ -69,11 +71,38 @@ void ObjLoader::parse(std::fstream &obj)
 			err = strcpy_s(buf, MAX_LINE_SIZE, cur);
 			buf[length] = '\0';
 			readFaceElement(buf, g);
-
+			*/
+			cur++;
+			char buf[MAX_LINE_SIZE];
+			char *remainder = cur;
+			char *delimiter = " ";
+			char *pBeg = nullptr;
+			errno_t err = 0;
+			for (int i = 0; i < 3; i++) {
+				if (pBeg = strtok_s(remainder, delimiter, &remainder)) {
+					err = strncpy_s(buf, pBeg, remainder - pBeg);
+					readFaceElement(buf, g);
+				}
+			}			
 			break;
 		}
-		case 'm': break; // material file
-		case 'u': break; // material instance
+		case 'm':
+		{
+			if (strncmp(cur, "tllib", 5) == 0) {
+				cur += 6;
+				this->materialName_.assign(cur);
+				parseMaterial();
+			}
+			else {
+				assert(0);
+			}
+			break;
+		}
+		case 'u':
+		{
+			
+			break;
+		}
 		case 'o': // object name
 		{
 			if (!o.empty()) {
