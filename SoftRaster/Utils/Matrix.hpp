@@ -3,9 +3,6 @@
 ** Matrix4x4 float
 ** 
 ** Matrix2x2 float is for internal use
-**
-** Issue:
-** 1. Row-major but left multiply!
 */
 
 #pragma once

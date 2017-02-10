@@ -19,6 +19,15 @@
     <Filter Include="Utils\src">
       <UniqueIdentifier>{4392f93e-2366-4e60-b1cd-90d3894f8a7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Client">
+      <UniqueIdentifier>{0922aeb6-12ae-4b37-b7d5-5b22ed2f530a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\inc">
+      <UniqueIdentifier>{40fe088e-dd2e-49a6-a64e-12857797dcc5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Client\src">
+      <UniqueIdentifier>{8e8bef76-5706-478a-8aa6-ad64ec833245}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Raster\Raster.hpp">
@@ -41,6 +50,60 @@
     </ClInclude>
     <ClInclude Include="Utils\BMPLoader.hpp">
       <Filter>Utils\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="AppFramework.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="CookTorranceApp.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="PerspectiveCamera.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthogonalCamera.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Prerequesite.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshData.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalContext.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Noncopyable.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.hpp">
+      <Filter>Client\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderEngine.hpp">
+      <Filter>Client\inc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,6 +128,39 @@
     </ClCompile>
     <ClCompile Include="Utils\BMPLoader.cpp">
       <Filter>Utils\src</Filter>
+    </ClCompile>
+    <ClCompile Include="CookTorranceApp.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthogonalCamera.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="PerspectiveCamera.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalContext.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderEngine.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Client\src</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Client\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

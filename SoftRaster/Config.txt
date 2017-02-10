@@ -1,0 +1,77 @@
+# OBJ MESH PATH
+OBJ_PATH	=
+CLOCK_WISE	= FALSE
+# DUMP BMP PATH
+DUMP_PATH	= 
+
+# WORLD_MATRIX
+#ROTATION	= 
+#TRANSLATE	= 
+
+# VIEW_MATRIX
+EYE			= 0.0 2.0 -2.0
+LOOKAT		= 0.0 1.0 0.0
+UP			= 0.0 1.0 0.0
+
+# PROJECTION TYPE: PERSPECTIVE OR ORTHOGONAL
+PROJ_TYPE	= ORTHOGONAL
+# PERSPECTIVE:	THETA, ASPECT, ZNEAR, ZFAR
+#PROJ_PARAM	= 60.0 1.0 1.0 1000.0
+# ORTHOGONAL:	LEFT, RIGHT, BOTTOM, TOP, ZNEAR, ZFAR
+PROJ_PARAM	= -3.0 3.0 -3.0 3.0 0.0 5.0
+
+VIEWPORT	= 0 0 1024 1024
+
+CLEAR_COLOR	= 0.1 0.1 0.1 1.0
+CLEAR_DEPTH	= 1.0
+
+# PS ATTRIBUTES
+BASE_COLOR	= 0.0 0.1 0.3 1.0
+DIFF_COLOR	= 0.88 0.88 0.88 1.0
+LIGHT_COLOR	= 1.0 1.0 1.0 1.0
+LIGHT_DIR	= 0.0 -1.0 -0.0
+SPEC_POW	= 25
+
+# TEXTURES
+#TEXTURE0_PATH	= 
+
+// code
+struct Config
+{
+	enum ProjectionType
+	{
+		PT_PERSPECTIVE = 0,
+		PT_ORTHOGONAL,
+	};
+	union ProjectionParams
+	{
+		float orthoParams[6];
+		float perspectiveParams[4];
+	};
+	std::string			objPath = "./Resource/Mesh/bunny.obj";
+	bool				isClockWise = false;
+	std::string			dumpPath = "./Output/Output.bmp";
+	Vector3f			eye = Vector3f(0.0f, 2.0f, -2.0f);
+	Vector3f			lookAt = Vector3f(0.0f, 1.0f, 0.0f);
+	Vector3f			up = Vector3f(0.0f, 1.0f, 0.0f);
+	ProjectionType		projType = PT_ORTHOGONAL;
+	ProjectionParams	projParams = { -3.0f, 3.0f, -3.0f, 3.0f, 0.0f, 5.0f };
+	float				viewport[4] = { 0,0,1024,1024 };
+	Color4f				clearColor = { 0.1f,0.1f, 0.1f, 1.0f };
+	float				clearDepth = 1.0f;
+	Color4f				baseColor = { 0.0f,0.1f,0.3f,1.0f };
+	Color4f				diffuseColor = { 0.88f, 0.88f, 0.88f, 1.0f };
+	Color4f				lightColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+	Vector3f			lightDir = { 0.0f,-1.0f, 0.0f };
+	int					specularPower = 25;
+
+	Config(std::string const &path)
+	{
+		std::string filePath = path + "Config.txt";
+		std::fstream cfgFile(filePath, std::fstream::in);
+		for (std::string line; std::getline(cfgFile, line); ) {
+			std::istringstream iss(line);
+			// 参考cmodel, klayge配置文件的读取
+		}
+	}
+};

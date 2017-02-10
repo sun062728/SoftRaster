@@ -57,6 +57,7 @@ void Raster::InputAssembler()
 		}
 	}
 	else {
+		/*
 		int size = vIndex_.capacity(); assert(size % 3 == 0);
 		for (int i = 0; i < size; ) {
 			int idx = vIndex_[i++], offset = idx * 3, cur = offset;
@@ -100,6 +101,8 @@ void Raster::InputAssembler()
 
 			VertexShader(ia2vs);
 		}
+		*/
+		assert(0);
 	}
 }
 

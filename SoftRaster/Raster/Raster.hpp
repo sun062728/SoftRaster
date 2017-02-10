@@ -146,7 +146,6 @@ private:
 
 	/* Internal data */
 	Framebuffer			drawBuffer_;
-	Texture2D			textures_[8];
 
 	/* States */
 	Matrix4x4			mWorld_;
@@ -156,7 +155,7 @@ private:
 	Matrix3x3			m33WV_;
 	Matrix3x3			m33World_;
 	Viewport			viewport_;
-	Texture2D			tex_[16];
+	Texture2D			textures_[8];
 
 	float				zNear_;
 	bool				bClockWise_;

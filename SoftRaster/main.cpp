@@ -5,12 +5,27 @@
 #include "Utils\Math.hpp"
 #include "Utils\BMPLoader.hpp"
 
+#include "CookTorranceApp.hpp"
+
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <istream>
 
-int main()
+int raw_style();
+
+int main() {
+	//ObjLoader loader("D:/Code/SoftRenderer-master/bin32/media/sponza.obj");
+	//ObjLoader loader("C:/Users/sun06/Desktop/Raster/bunny.obj");
+	//ObjLoader loader("./Resource/Mesh/modelviewer/head.obj");
+	//raw_style();
+	CookTorranceApp app;
+	app.init();
+	app.run();
+	app.destroy();
+}
+
+int raw_style()
 {
 	///ObjLoader objLoader("./Resource/Mesh/triangle.obj");
 	///ObjLoader objLoader("./Resource/Mesh/cube.obj");
@@ -23,7 +38,7 @@ int main()
 	std::vector<int> vIdx;
 	constexpr int WIDTH = 1024;
 	constexpr int HEIGHT = 1024;
-	constexpr float THETA = 60.0f;
+	constexpr float RADIAN = 60.0f / 180.0f*(float)PI;
 	Raster raster;
 	/************ client code ************/
 	// set transform
@@ -45,7 +60,7 @@ int main()
 	raster.setViewMatrix(mView);
 	// projection
 	Matrix4x4 mProj;
-	///Math::perspectiveProjMatrix(THETA, (float)(WIDTH/HEIGHT), 1.0f, 1000.0f, mProj);
+	///Math::perspectiveProjMatrix(RADIAN, (float)(WIDTH/HEIGHT), 1.0f, 1000.0f, mProj);
 	Math::orthoProjMatrix(-3.0f, 3.0f, -3.0f, 3.0f, 0.0f, 5.0f, mProj);
 	raster.setProjMatrix(mProj);
 	raster.setViewport(0, 0, WIDTH, HEIGHT);
@@ -75,8 +90,8 @@ int main()
 	for (unsigned int iObj = 0; iObj < maxObjNum; iObj++) {
 		unsigned int maxGrpNum = objLoader.getGroupNum(iObj);
 		for (unsigned int iGrp = 0; iGrp < maxGrpNum; iGrp++) {
-			char szMeshName[1024];
-			if (false == objLoader.getMeshName(iObj, iGrp, szMeshName, 1024))
+			std::string meshName;
+			if (false == objLoader.getMeshName(iObj, iGrp, meshName))
 				assert(0);
 			if (false == objLoader.getMesh(0, 0, vPos, iPosChn, vNorm, iNormChn, vTC, iTCChn, vIdx))
 				assert(0);

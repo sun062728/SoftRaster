@@ -84,13 +84,13 @@ namespace Math
 	// 0.0f,	0.0f,				2 * zf*zn / (zn - zf),	0.0f,
 	// cot = zn / 0.5w
 	bool perspectiveProjMatrix(
-		float thetaInDegree,	// in degree
+		float rad,	// in degree
 		float aspectRatio,		// w/h
 		float zn,
 		float zf,
 		Matrix4x4 &mat)
 	{
-		float cot = 1.0f / tan(thetaInDegree / 180.0f*(float)PI);
+		float cot = 1.0f / tan(rad);
 		mat.clear();
 		mat.m11 = cot;
 		mat.m22 = cot / aspectRatio;
