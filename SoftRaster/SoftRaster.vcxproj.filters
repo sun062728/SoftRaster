@@ -19,14 +19,23 @@
     <Filter Include="Utils\src">
       <UniqueIdentifier>{4392f93e-2366-4e60-b1cd-90d3894f8a7d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client">
+    <Filter Include="Engine">
       <UniqueIdentifier>{0922aeb6-12ae-4b37-b7d5-5b22ed2f530a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\inc">
-      <UniqueIdentifier>{40fe088e-dd2e-49a6-a64e-12857797dcc5}</UniqueIdentifier>
+    <Filter Include="Engine\App">
+      <UniqueIdentifier>{23b97a36-8f1b-4c0b-8096-a34bd197a9d3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Client\src">
-      <UniqueIdentifier>{8e8bef76-5706-478a-8aa6-ad64ec833245}</UniqueIdentifier>
+    <Filter Include="Engine\Scene">
+      <UniqueIdentifier>{c113043f-b8b8-4744-afdd-e86a147b3eea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Base">
+      <UniqueIdentifier>{c7bb815f-5747-4b6c-b02f-1a5717a927e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Render">
+      <UniqueIdentifier>{78485649-b79b-4567-94b7-4db704e6a01a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SharedData">
+      <UniqueIdentifier>{af48c2c2-c976-46e1-845e-892992617df8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -45,65 +54,62 @@
     <ClInclude Include="Utils\Math.hpp">
       <Filter>Utils\inc</Filter>
     </ClInclude>
-    <ClInclude Include="Raster\Texture.hpp">
-      <Filter>Raster\inc</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\BMPLoader.hpp">
       <Filter>Utils\inc</Filter>
     </ClInclude>
-    <ClInclude Include="AppFramework.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="CookTorranceApp.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Camera.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="PerspectiveCamera.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="OrthogonalCamera.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Material.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Prerequesite.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Light.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshData.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneManager.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="GlobalContext.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.hpp">
-      <Filter>Client\inc</Filter>
-    </ClInclude>
     <ClInclude Include="Noncopyable.hpp">
-      <Filter>Client\inc</Filter>
+      <Filter>Utils\inc</Filter>
     </ClInclude>
     <ClInclude Include="Singleton.hpp">
-      <Filter>Client\inc</Filter>
+      <Filter>Utils\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="AppFramework.hpp">
+      <Filter>Engine\App</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.hpp">
+      <Filter>Engine\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthogonalCamera.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="PerspectiveCamera.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.hpp">
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalContext.hpp">
+      <Filter>Engine\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshData.hpp">
+      <Filter>Engine\Render</Filter>
     </ClInclude>
     <ClInclude Include="RenderEngine.hpp">
-      <Filter>Client\inc</Filter>
+      <Filter>Engine\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="Prerequesite.hpp">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.hpp">
+      <Filter>Utils\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.hpp">
+      <Filter>SharedData</Filter>
+    </ClInclude>
+    <ClInclude Include="Raster\Texture.hpp">
+      <Filter>SharedData</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -123,44 +129,41 @@
     <ClCompile Include="Utils\Math.cpp">
       <Filter>Utils\src</Filter>
     </ClCompile>
-    <ClCompile Include="Raster\Texture.cpp">
-      <Filter>Raster\src</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\BMPLoader.cpp">
       <Filter>Utils\src</Filter>
     </ClCompile>
-    <ClCompile Include="CookTorranceApp.cpp">
-      <Filter>Client\src</Filter>
-    </ClCompile>
-    <ClCompile Include="OrthogonalCamera.cpp">
-      <Filter>Client\src</Filter>
-    </ClCompile>
-    <ClCompile Include="PerspectiveCamera.cpp">
-      <Filter>Client\src</Filter>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Engine\Scene</Filter>
     </ClCompile>
     <ClCompile Include="GlobalContext.cpp">
-      <Filter>Client\src</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Client\src</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneManager.cpp">
-      <Filter>Client\src</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Client\src</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderEngine.cpp">
-      <Filter>Client\src</Filter>
+      <Filter>Engine\Base</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
-      <Filter>Client\src</Filter>
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="OrthogonalCamera.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="PerspectiveCamera.cpp">
+      <Filter>Engine\Render</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
-      <Filter>Client\src</Filter>
+      <Filter>Engine\Render</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
-      <Filter>Client\src</Filter>
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderEngine.cpp">
+      <Filter>Engine\Render</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>SharedData</Filter>
+    </ClCompile>
+    <ClCompile Include="Raster\Texture.cpp">
+      <Filter>SharedData</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

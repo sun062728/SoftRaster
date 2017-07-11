@@ -5,24 +5,49 @@
 #include "Utils\Math.hpp"
 #include "Utils\BMPLoader.hpp"
 
-#include "CookTorranceApp.hpp"
-
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <istream>
 
+#include "AppFramework.hpp"
+#include "SceneManager.hpp"
+#include "GlobalContext.hpp"
+#include "Entity.hpp"
+#include "Camera.hpp"
+#include "Utils\Matrix.hpp"
+
 int raw_style();
 
+class CustomApp:public AppFramework {
+public:
+	void CustomApp::init() {
+		auto sm = GlobalContext::instance().sceneManagerInstance();
+		Matrix4x4 identity;
+		identity.identity();
+		auto entity = sm.CreateEntity("bunny", "./Resource/Mesh/bunny.obj", "TODO: matFileName", identity);
+		auto ortho_cam = sm.CreateCamera("default ortho");
+		sm.PushCamera(ortho_cam);
+	}
+
+	void CustomApp::run() {
+		auto sm = GlobalContext::instance().sceneManagerInstance();
+		sm.Update();
+	}
+
+	void CustomApp::destroy() {
+
+	}
+};
+
 int main() {
-	//ObjLoader loader("D:/Code/SoftRenderer-master/bin32/media/sponza.obj");
-	//ObjLoader loader("C:/Users/sun06/Desktop/Raster/bunny.obj");
-	//ObjLoader loader("./Resource/Mesh/modelviewer/head.obj");
-	//raw_style();
-	CookTorranceApp app;
+	/*
+	CustomApp app;
 	app.init();
 	app.run();
 	app.destroy();
+	*/
+	raw_style();
 }
 
 int raw_style()

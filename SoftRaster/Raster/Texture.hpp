@@ -10,6 +10,7 @@ enum AddressMode
 {
 	AM_WRAP,
 };
+
 enum FilterMode
 {
 	FM_NEAREST,

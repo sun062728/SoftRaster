@@ -40,7 +40,7 @@ public:
 
 	void Update();
 private:
-	void RenderVisbility(CameraPtr cam);
+	void RenderVisible(CameraPtr cam);
 
 	EntityLibrary				entityLib_;
 	CameraLibrary				cameraLib_;

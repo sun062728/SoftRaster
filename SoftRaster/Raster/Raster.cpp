@@ -412,8 +412,10 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 					drawBuffer_.pDepthbuffer[i + j*drawBuffer_.width] = depth;
 
 					// Interp props
-					// f = (a*fa / wa + b*fb / wb + c*fc / wc) / (a / wa + b / wb + c / wc)
-					// f = a2*f3 + b2*f1 + c2*f2
+					// f = fp / (1/zp) is perspective correcness interp
+					// f = (a*(fa/za) + b*(fb/zb) + c*(fc/wc)) / (a*(1/za) + b*(1/zb) + c*(1/zc))
+					// f = (a*fa/wa + b*fb/wb + c*fc/wc) / (a/wa + b/wb + c/wc)
+					// f = a'*fa + b'*fb + c'*fc
 					float aDivWa = a / v3.position.w;
 					float bDivWb = b / v1.position.w;
 					float cDivWc = c / v2.position.w;

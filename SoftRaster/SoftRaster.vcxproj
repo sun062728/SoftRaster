@@ -150,7 +150,6 @@
   <ItemGroup>
     <ClInclude Include="AppFramework.hpp" />
     <ClInclude Include="Camera.hpp" />
-    <ClInclude Include="CookTorranceApp.hpp" />
     <ClInclude Include="Entity.hpp" />
     <ClInclude Include="GlobalContext.hpp" />
     <ClInclude Include="Light.hpp" />
@@ -175,7 +174,6 @@
     <ClInclude Include="MeshData.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CookTorranceApp.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GlobalContext.cpp" />
     <ClCompile Include="Light.cpp" />

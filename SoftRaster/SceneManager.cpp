@@ -85,10 +85,10 @@ void SceneManager::Update() {
 			//entityPtr->update();
 		}
 	}
-	RenderVisbility(cam);
+	RenderVisible(cam);
 }
 
-void SceneManager::RenderVisbility(CameraPtr cam) {
+void SceneManager::RenderVisible(CameraPtr cam) {
 	// do cull
 
 	// cam->markDirty();
