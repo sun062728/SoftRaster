@@ -150,7 +150,7 @@ void Raster::TriangleSetup_Clip(VS2TAS vs2tas)
 	VtxProps &v3 = vs2tas.v3;
 
 	// Clipping
-	// 1. All 3 vertices on one side should be clipped.
+	// 1. All 3 vertices on one side should be culled.
 	Vector4f &v1c = v1.position, &v2c = v2.position, &v3c = v3.position;
 	if (v1c.x > v1c.w &&
 		v2c.x > v2c.w &&
@@ -368,19 +368,25 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 	// pixel center
 	float minX = (float)iMinX + 0.5f, maxX = (float)iMaxX - 0.5f;
 	float minY = (float)iMinY + 0.5f, maxY = (float)iMaxY - 0.5f;
-	// constants for edge function
-	// (y1 - y2)*x - (x1 - x2)*y + (y1*x2 - x1*y2) = 0;
-	float Dx12 = x1 - x2, Dy12 = y1 - y2, C12 = x2*y1 - y2*x1; // C12 = Dy12*x1 - Dx12*y1
-	float Dx23 = x2 - x3, Dy23 = y2 - y3, C23 = x3*y2 - y3*x2; // C23 = Dy23*x2 - Dx23*y2
-	float Dx31 = x3 - x1, Dy31 = y3 - y1, C31 = x1*y3 - y1*x3; // C31 = Dy31*x3 - Dx31*y3
-	// for lower-left pixel
-	float PllL12 = Dx12*minY - Dy12*minX + C12, row12 = PllL12, col12;
-	float PllL23 = Dx23*minY - Dy23*minX + C23, row23 = PllL23, col23;
-	float PllL31 = Dx31*minY - Dy31*minX + C31, row31 = PllL31, col31;
-	// pX in lineYZ
-	float P3L12 = Dx12*y3 - Dy12*x3 + C12;
-	float P1L23 = Dx23*y1 - Dy23*x1 + C23;
-	///float P2L31 = Dx31*y2 - Dy31*x2 + C31; // useless, omitted
+	// edge equation
+	//
+	// y1 - y2   y - y2
+	// ------- = ------ => (y1 - y2)*x + (x2 - x1)*y + (x1 - x2)*y2 - (y1 - y2)*x2 = 0
+	// x1 - x2   x - x2
+	//
+	// => (y1 - y2)*x + (x2 - x1)*y + x1*y2 - y1*x2 = 0
+	//
+	float a1 = y1 - y2, b1 = x2 - x1, c1 = x1*y2 - y1*x2; // line1: p1 -> p2
+	float a2 = y2 - y3, b2 = x3 - x2, c2 = x2*y3 - y2*x3; // line2: p2 -> p3
+	float a3 = y3 - y1, b3 = x1 - x3, c3 = x3*y1 - y3*x1; // line3: p3 -> p1
+	// lower-left pixel is the starting point
+	float distL12 = a1*minX + b1*minY + c1, row12 = distL12, col12;
+	float distL23 = a2*minX + b2*minY + c2, row23 = distL23, col23;
+	float distL31 = a3*minX + b3*minY + c3, row31 = distL31, col31;
+	// dist of vertex to edge (for barycentrics)
+	float P3L12 = a1*x3 + b1*y3 + c1;
+	float P1L23 = a2*x1 + b2*y1 + c2;
+	///float P2L31 = b3*y2 - a3*x2 + c3; // useless, omitted
 
 	// walk through bbox
 	for (int j = iMinY; j <= iMaxY; j++) {
@@ -388,19 +394,20 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 		col23 = row23;
 		col31 = row31;
 		for (int i = iMinX; i <= iMaxX; i++) {
-			// clock-wise is F > 0, right side of the vector
-			if (col12 > 0.0f && col23 > 0.0f && col31 > 0.0f) {
+			// F < 0 if clockwise
+			if (col12 < 0.0f && col23 < 0.0f && col31 < 0.0f) {
 				float x = (float)i + 0.5f, y = (float)j + 0.5f;
 				// Barycentric coordinate:
 				// a + b + c = 1
 				// a = A(pp1p2)/A(p1p2p3) = h/h3
 				// distance from point to line: h = |(ax+by+c)/sqrt(a*a+b*b)|
-				// a = h/h3 = |(ax+by+c)/(ax3+by3+c)|
-				float PL12 = Dx12*y - Dy12*x + C12;
-				float PL23 = Dx23*y - Dy23*x + C23;
-				float a = abs(PL12 / P3L12);	// p3
-				float b = abs(PL23 / P1L23);	// p1
-				float c = 1.0f - a - b;			// p2
+				// a = h/h3 = (ax+by+c)/(ax3+by3+c)
+				float PL12 = b1*y + a1*x + c1;
+				float PL23 = b2*y + a2*x + c2;
+				// abs is redundant
+				float a = PL12 / P3L12;	// p3
+				float b = PL23 / P1L23;	// p1
+				float c = 1.0f - a - b;	// p2
 
 				VtxProps &v1 = tas2ras.v1;
 				VtxProps &v2 = tas2ras.v2;
@@ -433,21 +440,21 @@ void Raster::Rasterization_float(TAS2RAS tas2ras)
 					ras2ps.p.posWorld = v3.posWorld*a2 + v1.posWorld*b2 + v2.posWorld*c2;
 
 					///PixelShader(ras2ps);
-					///PixelShader_phong(ras2ps);
+					PixelShader_phong(ras2ps);
 					///PixelShader_fresnel(ras2ps);
-					PixelShader_cook_torrance(ras2ps);
+					///PixelShader_cook_torrance(ras2ps);
 				}
 				else {
 					;
 				}
 			}
-			col12 -= Dy12;
-			col23 -= Dy23;
-			col31 -= Dy31;
+			col12 += a1;
+			col23 += a2;
+			col31 += a3;
 		}
-		row12 += Dx12;
-		row23 += Dx23;
-		row31 += Dx31;
+		row12 += b1;
+		row23 += b2;
+		row31 += b3;
 	}
 }
 
@@ -555,7 +562,7 @@ void Raster::PixelShader_phong(RAS2PS ras2ps)
 	int y = ras2ps.p.coord.y;
 	Vector3f normal = ras2ps.p.normal;
 	Vector2f texCoord = ras2ps.p.texcoord;
-	Vector3f lightDir(0.0f, -1.0f, -1.0f); // World coordinate
+	Vector3f lightDir(0.0f, -1.0f, 1.0f); // World coordinate
 	Vector3f minusLightDir = -lightDir;
 	Color4f diffuse;
 	Color4f lightColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -838,7 +845,7 @@ void Raster::dumpRT2BMP(const char *path)
 	// bmp header
 	std::fstream bmpOutput(path, std::fstream::out | std::fstream::binary);
 	if (true == bmpOutput.fail()) {
-		OutputDebugString("Open output file failed!\n");
+		OutputDebugString(L"Open output file failed!\n");
 		return;
 	}
 
@@ -868,6 +875,9 @@ void Raster::dumpRT2BMP(const char *path)
 	bmpOutput.write(reinterpret_cast<char*>(&bmpInfoHeader), sizeof(BITMAPINFOHEADER));
 	bmpOutput.write(color, width * height * pitchInBytes);
 	bmpOutput.close();
+	
+	delete color;
+
 	return;
 }
 

@@ -3,6 +3,9 @@
 #include <vector>
 #include <cassert>
 #include <fstream>
+#include <cmath>
+#include <limits>
+#include <iostream>
 
 class ObjLoader
 {
@@ -155,6 +158,11 @@ private:
 	Object					obj_;
 	Group					grp_;
 	std::string				path_;
+	// tmp bbox
+	//float					BBoxMin_[3] = { std::numeric_limits<float>::max() };
+	//float					BBoxMax_[3] = { std::numeric_limits<float>::min() };
+	float					BBoxMin_[3] = { FLT_MAX };
+	float					BBoxMax_[3] = { FLT_MIN };
 
 	void parse(std::fstream &obj);
 	void parseMaterial() {
@@ -374,6 +382,17 @@ private:
 		return i;
 	}
 
+	inline int readFloats(char *p, float fv3[])
+	{
+		int i = 0; --p;
+		do {
+			fv3[i] = static_cast<float>(atof(++p));
+			i++;
+		} while (NULL != (p = strchr(p, ' ')));
+
+		return i;
+	}
+
 	inline void pushPos(Group &g, int faceIdx)
 	{
 		int offset = (--faceIdx)*iPosChn_;
@@ -407,6 +426,9 @@ private:
 		g.iTCChn = iTCChn_;
 		o.vGroup.push_back(g);
 		g.clear();
+		std::cout << "Group name: " << g.sGroupName.c_str() << std::endl;
+		std::cout << "BBox max: " << BBoxMax_[0] << "," << BBoxMax_[1] << "," << BBoxMax_[2] << std::endl;
+		std::cout << "BBox min: " << BBoxMin_[0] << "," << BBoxMin_[1] << "," << BBoxMin_[2] << std::endl;
 	}
 
 	inline void endObj() 

@@ -8,6 +8,7 @@
 */
 
 #include <cmath>
+#include <cassert>
 #include "Matrix.hpp"
 
 struct Vector2f
@@ -75,6 +76,10 @@ struct Vector3f
 	Vector3f normalize()const
 	{
 		float len = sqrtf(x*x + y*y + z*z);
+		if (len == 0.0f) {
+			assert(0);
+			return Vector3f();
+		}
 		return (*this) / len;
 	}
 	Vector3f operator*(Matrix3x3 const &m)

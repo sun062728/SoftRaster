@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 #include <istream>
+#include <cassert>
 
 #include "AppFramework.hpp"
 #include "SceneManager.hpp"
@@ -48,6 +49,8 @@ int main() {
 	app.destroy();
 	*/
 	raw_style();
+
+	assert(!_CrtDumpMemoryLeaks());
 }
 
 int raw_style()

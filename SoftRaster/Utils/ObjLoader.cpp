@@ -28,7 +28,18 @@ void ObjLoader::parse(std::fstream &obj)
 			{
 			case ' ':
 			{
-				int i = readFloats(cur, vPosition_);
+				//int i = readFloats(cur, vPosition_);
+				float fv[3];
+				int i = readFloats(cur, fv);
+				for (int j = 0; j < 3; j++) {
+					vPosition_.push_back(fv[j]);
+					if (fv[j] < BBoxMin_[j]) {
+						BBoxMin_[j] = fv[j];
+					}
+					if (fv[j] > BBoxMax_[j]) {
+						BBoxMax_[j] = fv[j];
+					}
+				}
 				iPosChn_ == 0 ? iPosChn_ = i : assert(iPosChn_ == i);
 				break;
 			}
