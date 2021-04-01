@@ -48,6 +48,7 @@ int main() {
 	app.run();
 	app.destroy();
 	*/
+
 	raw_style();
 
 	assert(!_CrtDumpMemoryLeaks());
