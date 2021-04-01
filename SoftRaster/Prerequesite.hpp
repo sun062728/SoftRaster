@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <map>
+#include <string>
 
 class Material;
 typedef std::shared_ptr<Material>				MaterialPtr;
